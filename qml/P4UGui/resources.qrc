@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/Exit.png</file>
+        <file>icons/P4UGui64.png</file>
+        <file>icons/P4UGui80.png</file>
+        <file>icons/SliderHandle.png</file>
+        <file>icons/Watermark.png</file>
+        <file>ViewWatermark.qml</file>
+        <file>FileBrowser.qml</file>
+        <file>MultiSelect.js</file>
+        <file>P4U_Button.qml</file>
+        <file>P4U_Message.qml</file>
+        <file>P4U_Page.qml</file>
+        <file>P4U_Slider.qml</file>
+        <file>ProgressBar.qml</file>
+        <file>main.qml</file>
+    </qresource>
+</RCC>
