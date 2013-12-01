@@ -18,6 +18,11 @@ Button {
             color: "darkblue"
         }
 
+        /*label: Image {
+            anchors.fill: parent
+            source: button_text.iconSource
+        }
+
         label: Text {
             id: button_text
             anchors.fill: parent
@@ -28,8 +33,9 @@ Button {
             font.bold: true
             wrapMode: Text.WordWrap
             text: button.text
-        }
+        }*/
     }
+
 
     //onEnabledChanged: enabled ? button_text.color = "white" : button_text.color = "gray"
 }
