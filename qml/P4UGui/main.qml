@@ -103,9 +103,7 @@ P4U_Page {
             id: applyWatermarkButton
             width: chooseWatermarkButton.width
             height: chooseWatermarkButton.height
-            action: Action {
-                text: "Apply Watermark"
-            }
+            text: "Apply Watermark"
 
             onClicked: {
                 if(workloadList.text == "  ")
@@ -119,7 +117,8 @@ P4U_Page {
             id: exitButton
             width: applyWatermarkButton.width
             height: applyWatermarkButton.height
-            iconSource: "qrc:///icons/Exit.png"
+            text: "Exit"
+            //iconSource: "qrc:///icons/Exit.png"
             onClicked: {
                 Qt.quit()
             }
