@@ -69,7 +69,11 @@ void AppLogic::checkDeps()
 
 int AppLogic::checkForExecutable(QString executable) const
 {
+#ifdef Q_OS_WIN
+    return m_pP4UProcess->execute(QString("%1").arg(executable));
+#else
     return m_pP4UProcess->execute(QString("which %1").arg(executable));
+#endif
 }
 
 int AppLogic::checkForImageMagick() const
