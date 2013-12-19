@@ -14,6 +14,8 @@ public:
     
     void readDefaultSettings();
     void checkDeps();
+    Q_INVOKABLE QString getDefaultDir();
+    Q_INVOKABLE QString getPathPrefix();
 
 private:
     QProcess* m_pP4UProcess;
