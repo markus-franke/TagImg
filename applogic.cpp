@@ -67,6 +67,25 @@ void AppLogic::checkDeps()
         emit dependencyError(dependencies);
 }
 
+QString AppLogic::getDefaultDir()
+{
+    QString homePath = QDir::homePath();
+
+    homePath.prepend("file:///");
+    homePath.append("/Desktop");
+
+    return homePath;
+}
+
+QString AppLogic::getPathPrefix()
+{
+#ifdef Q_OS_WIN
+    return "file:///";
+#else
+    return "";
+#endif
+}
+
 int AppLogic::checkForExecutable(QString executable) const
 {
 #ifdef Q_OS_WIN
@@ -154,7 +173,11 @@ void AppLogic::applyWatermark()
     QString listItem;
 
     foreach(listItem, m_lWorklist) {
+#ifdef Q_OS_WIN
+        listItem.remove("file:///");
+#else
         listItem.remove("file://");
+#endif
         if(QFileInfo(listItem).isDir()) {
             m_pP4UProcess->setWorkingDirectory(listItem);
             QDir directory(listItem);
