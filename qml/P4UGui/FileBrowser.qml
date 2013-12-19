@@ -38,7 +38,7 @@ P4U_Page {
 
         FolderListModel {
             id: foldermodel
-            folder: "file:///home/franm/Desktop"
+            folder: AppLogic.getDefaultDir()
             sortField: FolderListModel.Name
             showDirsFirst: true
             nameFilters: ["*.*"]
@@ -79,9 +79,10 @@ P4U_Page {
                     function folderSelected()
                     {
                         if (foldermodel.isFolder(index)) {
-                            foldermodel.folder = filePath
+                            foldermodel.folder = AppLogic.getPathPrefix() + filePath
                             MultiSelect.clear()
-                            listView.currentIndex = 0
+                            if(listView.count > 0)
+                                listView.currentIndex = 0
                             console.debug("Changing to folder: ", foldermodel.folder)
                         }
                         else {
