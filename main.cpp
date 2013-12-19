@@ -8,19 +8,20 @@
 #include <QQuickItem>
 #include <QThread>
 #include <QDebug>
+#include <QQmlContext>
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
-    //QQmlApplicationEngine engine(QStringLiteral("qml/P4UGui/main.qml"));
+
+    AppLogic appLogic;
 
     QtQuick2ApplicationViewer viewer;
+    viewer.rootContext()->setContextProperty("AppLogic", &appLogic);
     viewer.setSource(QStringLiteral("qrc:///main.qml"));
     viewer.setTitle("P4U Gui");
     viewer.setIcon(QIcon("qrc:///icons/Watermark.png"));
     viewer.showExpanded();
-
-    AppLogic appLogic;
 
     // start new thread for application logic
     QThread appLogicThread;
