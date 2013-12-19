@@ -86,7 +86,7 @@ P4U_Page {
         }
     }
 
-    ProgressBar {
+    P4U_ProgressBar {
             id: progressBar
             anchors { top: buttonGrid.bottom; left: parent.left; topMargin: 20; right: parent.right; leftMargin: buttonGrid.anchors.leftMargin; rightMargin: buttonGrid.anchors.rightMargin }
             width: parent.width
@@ -143,7 +143,7 @@ P4U_Page {
 
         onProcessWorklist: {
             hide()
-            setWatermark(worklist.toString().slice(7)) // remove leading "file://
+            setWatermark(worklist.toString());
         }
     }
 
