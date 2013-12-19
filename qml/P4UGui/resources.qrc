@@ -12,7 +12,7 @@
         <file>P4U_Message.qml</file>
         <file>P4U_Page.qml</file>
         <file>P4U_Slider.qml</file>
-        <file>ProgressBar.qml</file>
+        <file>P4U_ProgressBar.qml</file>
         <file>main.qml</file>
     </qresource>
 </RCC>
