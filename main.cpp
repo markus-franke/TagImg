@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 
     // connect signals between GUI and application
     // GUI -> App
-    QObject::connect(viewer.rootObject(), SIGNAL(applyWatermark()), &appLogic, SLOT(applyWatermark()));
+    QObject::connect(viewer.rootObject(), SIGNAL(applyWatermarks()), &appLogic, SLOT(applyWatermarks()));
     QObject::connect(viewer.rootObject(), SIGNAL(setTargetObject(QString)), &appLogic, SLOT(setTargetObject(QString)));
     QObject::connect(viewer.rootObject(), SIGNAL(setWorklist(QVariant)), &appLogic, SLOT(setWorklist(QVariant)));
     QObject::connect(viewer.rootObject(), SIGNAL(setImageScale(int)), &appLogic, SLOT(setImageScale(int)));

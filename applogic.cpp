@@ -6,6 +6,7 @@
 #include <QDir>
 #include <QProcess>
 #include <QGuiApplication>
+#include <ImageMagick/Magick++.h>
 
 // define some keys for the default settings
 #define KEY_WATERMARK "watermark"
@@ -71,19 +72,16 @@ QString AppLogic::getDefaultDir()
 {
     QString homePath = QDir::homePath();
 
-    homePath.prepend("file:///");
+    homePath.prepend("file://");
     homePath.append("/Desktop");
 
     return homePath;
 }
 
-QString AppLogic::getPathPrefix()
+QString AppLogic::fixPath(QString filePath)
 {
-#ifdef Q_OS_WIN
-    return "file:///";
-#else
-    return "";
-#endif
+    filePath.prepend("file://");
+    return filePath;
 }
 
 int AppLogic::checkForExecutable(QString executable) const
@@ -110,58 +108,23 @@ int AppLogic::checkForImageMagick() const
     return 0;
 }
 
-#if 0
-void AppLogic::applyWatermark()
+bool AppLogic::applyWatermark(const QString &imageFile) const
 {
-    qDebug() << "Applying watermark to file/folder:" << m_strTargetObject;
+    Magick::Image image(qPrintable(imageFile));
+    Magick::Image watermark(qPrintable(m_strWatermark));
 
-    // reset progress bar
-    emit setProgressValue(0);
+    watermark.opacity(QuantumRange / 2);
 
-    QStringList fileList;
-    bool bError = false;
+    //image.autoOrient();
+    image.scale(Magick::Geometry(qPrintable(QString("%1\%x%2\%").arg(m_iImageScalePct).arg(m_iImageScalePct))));
+    image.composite(watermark, Magick::NorthEastGravity, Magick::DissolveCompositeOp );
 
-    if(QFileInfo(m_strTargetObject).isDir()) {
-        m_pP4UProcess->setWorkingDirectory(m_strTargetObject);
-        QDir directory(m_strTargetObject);
-        QStringList nameFilters;
-        nameFilters << "*.JPG" << "*.jpg";
-        fileList.append(directory.entryList(nameFilters));
-    }
-    else {
-        fileList.append(m_strTargetObject);
-    }
+    image.write(qPrintable(imageFile + "_out.jpg"));
 
-    QString currentFile;
-    int processTimeoutMs = 10000;
-    for(int i = 0; i < fileList.length() && !bError; ++i) {
-        currentFile = fileList.at(i);
-        qDebug() << currentFile;
-        bError = true;
-
-        m_pP4UProcess->start(QString("%1 -auto-orient -resize %2% %3").arg(BIN_MOGRIFY).arg(m_iImageScalePct).arg(currentFile));
-        if(!m_pP4UProcess->waitForFinished(processTimeoutMs) || m_pP4UProcess->exitStatus() != QProcess::NormalExit)
-            continue;
-
-        m_pP4UProcess->start(QString("%1 -dissolve 50 -gravity northeast -geometry +50+0 %2 %3 %4").arg(BIN_COMPOSITE).arg(m_strWatermark).arg(currentFile).arg(currentFile));
-        if(!m_pP4UProcess->waitForFinished(processTimeoutMs) || m_pP4UProcess->exitStatus() != QProcess::NormalExit)
-            continue;
-
-        // set progress value
-        emit setProgressValue(qRound((i+1) * 100.0 / fileList.length()));
-
-        // reset error flag
-        bError = false;
-    }
-
-    if(bError) {
-        qDebug() << "There was an error. Current file =" << currentFile;
-    }
-
-    emit watermarkDone(bError);
+    return true;
 }
-#else
-void AppLogic::applyWatermark()
+
+void AppLogic::applyWatermarks()
 {
     qDebug() << "Applying watermark to the following objects:" << m_lWorklist;
 
@@ -190,35 +153,24 @@ void AppLogic::applyWatermark()
         }
     }
 
-    QString currentFile;
-    int processTimeoutMs = 10000;
-    for(int i = 0; i < fileList.length() && !bError; ++i) {
-        currentFile = fileList.value(i);
-        qDebug() << currentFile;
-        bError = true;
+    QString imageFile;
 
-        m_pP4UProcess->start(QString("%1 -auto-orient -resize %2% \"%3\"").arg(BIN_MOGRIFY).arg(m_iImageScalePct).arg(currentFile));
-        if(!m_pP4UProcess->waitForFinished(processTimeoutMs) || m_pP4UProcess->exitCode() != 0)
-            break;
-
-        m_pP4UProcess->start(QString("%1 -dissolve 50 -gravity northeast -geometry +50+0 %2 \"%3\" \"%4\"").arg(BIN_COMPOSITE).arg(m_strWatermark).arg(currentFile).arg(currentFile));
-        if(!m_pP4UProcess->waitForFinished(processTimeoutMs) || m_pP4UProcess->exitCode() != 0)
-            break;
+    for(int i = 0; i < fileList.length() && !bError; ++i)
+    {
+        imageFile = fileList.value(i);
+        qDebug() << imageFile;
+        bError = !applyWatermark(imageFile);
 
         // set progress value
         emit setProgressValue(qRound((i+1) * 100.0 / fileList.length()));
-
-        // reset error flag
-        bError = false;
     }
 
     if(bError) {
-        qDebug() << "There was an error. Current file =" << currentFile;
+        qDebug() << "There was an error. Current file =" << imageFile;
     }
 
     emit watermarkDone(bError);
 }
-#endif
 
 void AppLogic::setTargetObject(const QString &targetObject)
 {

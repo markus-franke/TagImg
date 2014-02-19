@@ -109,7 +109,7 @@ P4U_Page {
                 if(workloadList.text == "  ")
                     showMessage("Please choose any file or folder!")
                 else
-                    applyWatermark()
+                    applyWatermarks()
             }
         }
 
@@ -124,7 +124,6 @@ P4U_Page {
             }
         }
     }
-
 
     FileBrowser {
         id: fileBrowser
@@ -193,7 +192,7 @@ P4U_Page {
     onVisibleChanged: console.debug("main.qml is ", visible ? "visible": "invisible")
 
     // outgoing
-    signal applyWatermark()
+    signal applyWatermarks()
     signal setTargetObject(string name)
     signal setWorklist(var worklist)
     signal setImageScale(int percent)

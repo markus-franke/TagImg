@@ -15,7 +15,7 @@ public:
     void readDefaultSettings();
     void checkDeps();
     Q_INVOKABLE QString getDefaultDir();
-    Q_INVOKABLE QString getPathPrefix();
+    Q_INVOKABLE QString fixPath(QString filePath);
 
 private:
     QProcess* m_pP4UProcess;
@@ -28,6 +28,7 @@ private:
     void writeDefaultSettings() const;
     int checkForExecutable(QString executable) const;
     int checkForImageMagick() const;
+    bool applyWatermark(const QString& imageFile) const;
 
 signals:
     void watermarkDone(int exitCode);
@@ -38,7 +39,7 @@ signals:
     void dependencyError(const QString& dependencies);
 
 public slots:
-    void applyWatermark();
+    void applyWatermarks();
     void setTargetObject(const QString &targetObject);
     void setWorklist(const QVariant &worklist);
     void setWatermark(const QString& watermark);

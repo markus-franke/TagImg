@@ -8,6 +8,10 @@ QML_IMPORT_PATH =
 
 QT -= network
 
+# add Image Magick library
+unix:LIBS += -lMagick++
+unix:INCLUDEPATH += /usr/include/ImageMagick
+
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
     applogic.cpp

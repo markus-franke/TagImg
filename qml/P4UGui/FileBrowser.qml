@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import Qt.labs.folderlistmodel 2.0
+import Qt.labs.folderlistmodel 2.1
 import "MultiSelect.js" as MultiSelect
 
 P4U_Page {
@@ -32,6 +32,7 @@ P4U_Page {
             anchors { left: currentFolderText.right; leftMargin: 5 }
 
             function setFolder(folder) {
+                console.log("setFolder: ", folder)
                 text = folder.toString().slice(7)
             }
         }
@@ -78,16 +79,16 @@ P4U_Page {
 
                     function folderSelected()
                     {
-                        if (foldermodel.isFolder(index)) {
-                            foldermodel.folder = AppLogic.getPathPrefix() + filePath
+                        if (ListView.view.model.isFolder(index)) {
+                            ListView.view.model.folder = AppLogic.fixPath(filePath)
                             MultiSelect.clear()
-                            if(listView.count > 0)
-                                listView.currentIndex = 0
-                            console.debug("Changing to folder: ", foldermodel.folder)
+                            if(ListView.view.count > 0)
+                                ListView.view.currentIndex = 0
+                            console.debug("Changing to folder: ", ListView.view.model.folder)
                         }
                         else {
-                            console.debug("File", listView.currentItem.myData.fileName, "has been chosen")
-                            MultiSelect.addValue(foldermodel.folder + "/" + listView.currentItem.myData.fileName)
+                            console.debug("File", fileName, "has been chosen")
+                            MultiSelect.addValue(foldermodel.folder + "/" + fileName)
                             processWorklist(MultiSelect.selectedValues())
                         }
                     }
@@ -102,7 +103,7 @@ P4U_Page {
                         MouseArea {
                             anchors.fill: parent
                             onClicked: {
-                                listView.currentIndex = index
+                                item.ListView.view.currentIndex = index
                                 if(bMultiSelect) {
                                     if(mouse.modifiers && Qt.ControlModifier) {
                                         item.bSelected = !item.bSelected
