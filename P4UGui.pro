@@ -9,8 +9,10 @@ QML_IMPORT_PATH =
 QT -= network
 
 # add Image Magick library
-unix:LIBS += -lMagick++
-unix:INCLUDEPATH += /usr/include/ImageMagick
+unix:LIBS += -L$$PWD/utils/ImageMagick-6.8.8-7/Magick++/lib/.libs -lMagick++-6.Q16
+unix:INCLUDEPATH += utils/ImageMagick-6.8.8-7/Magick++/lib utils/ImageMagick-6.8.8-7
+
+DEFINES += MAGICKCORE_QUANTUM_DEPTH=16 MAGICKCORE_HDRI_ENABLE
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
