@@ -6,7 +6,7 @@
 #include <QDir>
 #include <QProcess>
 #include <QGuiApplication>
-#include <ImageMagick/Magick++.h>
+#include <Magick++.h>
 
 // define some keys for the default settings
 #define KEY_WATERMARK "watermark"
@@ -115,7 +115,7 @@ bool AppLogic::applyWatermark(const QString &imageFile) const
 
     watermark.opacity(QuantumRange / 2);
 
-    //image.autoOrient();
+    image.autoOrient();
     image.scale(Magick::Geometry(qPrintable(QString("%1\%x%2\%").arg(m_iImageScalePct).arg(m_iImageScalePct))));
     image.composite(watermark, Magick::NorthEastGravity, Magick::DissolveCompositeOp );
 
