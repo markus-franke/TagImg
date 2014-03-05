@@ -12,10 +12,6 @@
 #define KEY_WATERMARK "watermark"
 #define KEY_SCALE_PCT "scale_pct"
 
-// define some ImageMagick binaries
-#define BIN_MOGRIFY     "mogrify"
-#define BIN_COMPOSITE   "composite"
-
 AppLogic::AppLogic(QObject *parent) :
     QObject(parent),
     m_pP4UProcess(NULL),
@@ -56,14 +52,6 @@ void AppLogic::checkDeps()
     QString dependencies;
     bool error = false;
 
-    // check for ImageMagick
-    if(checkForImageMagick())
-    {
-        qDebug("Unable to find ImageMagick!");
-        dependencies += "ImageMagick:";
-        error = true;
-    }
-
     if(error)
         emit dependencyError(dependencies);
 }
@@ -78,12 +66,6 @@ QString AppLogic::getDefaultDir()
     return homePath;
 }
 
-QString AppLogic::fixPath(QString filePath)
-{
-    filePath.prepend("file://");
-    return filePath;
-}
-
 int AppLogic::checkForExecutable(QString executable) const
 {
 #ifdef Q_OS_WIN
@@ -93,19 +75,10 @@ int AppLogic::checkForExecutable(QString executable) const
 #endif
 }
 
-int AppLogic::checkForImageMagick() const
+QString AppLogic::fixPath(QString filePath)
 {
-    // check for mogrify
-    if(checkForExecutable(BIN_MOGRIFY))
-        return -1;
-
-    // check for composite
-    if(checkForExecutable(BIN_COMPOSITE))
-        return -1;
-
-    qDebug("ImageMagick is present!");
-
-    return 0;
+    filePath.prepend("file://");
+    return filePath;
 }
 
 bool AppLogic::applyWatermark(const QString &imageFile) const
