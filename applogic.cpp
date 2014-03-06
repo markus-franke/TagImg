@@ -71,7 +71,7 @@ QString AppLogic::getDefaultDir()
 {
     QString homePath = QDir::homePath();
 
-    homePath.prepend("file:///");
+    homePath.prepend("file://");
     homePath.append("/Desktop");
 
     return homePath;
@@ -108,6 +108,12 @@ int AppLogic::checkForImageMagick() const
     qDebug("ImageMagick is present!");
 
     return 0;
+}
+
+QString AppLogic::fixPath(QString filePath)
+{
+    filePath.prepend("file://");
+    return filePath;
 }
 
 #if 0

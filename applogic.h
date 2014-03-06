@@ -15,6 +15,7 @@ public:
     void readDefaultSettings();
     void checkDeps();
     Q_INVOKABLE QString getDefaultDir();
+    Q_INVOKABLE QString fixPath(QString filePath);
     Q_INVOKABLE QString getPathPrefix();
 
 private:
