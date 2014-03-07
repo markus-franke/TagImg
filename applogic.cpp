@@ -116,57 +116,6 @@ QString AppLogic::fixPath(QString filePath)
     return filePath;
 }
 
-#if 0
-void AppLogic::applyWatermark()
-{
-    qDebug() << "Applying watermark to file/folder:" << m_strTargetObject;
-
-    // reset progress bar
-    emit setProgressValue(0);
-
-    QStringList fileList;
-    bool bError = false;
-
-    if(QFileInfo(m_strTargetObject).isDir()) {
-        m_pP4UProcess->setWorkingDirectory(m_strTargetObject);
-        QDir directory(m_strTargetObject);
-        QStringList nameFilters;
-        nameFilters << "*.JPG" << "*.jpg";
-        fileList.append(directory.entryList(nameFilters));
-    }
-    else {
-        fileList.append(m_strTargetObject);
-    }
-
-    QString currentFile;
-    int processTimeoutMs = 10000;
-    for(int i = 0; i < fileList.length() && !bError; ++i) {
-        currentFile = fileList.at(i);
-        qDebug() << currentFile;
-        bError = true;
-
-        m_pP4UProcess->start(QString("%1 -auto-orient -resize %2% %3").arg(BIN_MOGRIFY).arg(m_iImageScalePct).arg(currentFile));
-        if(!m_pP4UProcess->waitForFinished(processTimeoutMs) || m_pP4UProcess->exitStatus() != QProcess::NormalExit)
-            continue;
-
-        m_pP4UProcess->start(QString("%1 -dissolve 50 -gravity northeast -geometry +50+0 %2 %3 %4").arg(BIN_COMPOSITE).arg(m_strWatermark).arg(currentFile).arg(currentFile));
-        if(!m_pP4UProcess->waitForFinished(processTimeoutMs) || m_pP4UProcess->exitStatus() != QProcess::NormalExit)
-            continue;
-
-        // set progress value
-        emit setProgressValue(qRound((i+1) * 100.0 / fileList.length()));
-
-        // reset error flag
-        bError = false;
-    }
-
-    if(bError) {
-        qDebug() << "There was an error. Current file =" << currentFile;
-    }
-
-    emit watermarkDone(bError);
-}
-#else
 void AppLogic::applyWatermark()
 {
     qDebug() << "Applying watermark to the following objects:" << m_lWorklist;
@@ -224,7 +173,6 @@ void AppLogic::applyWatermark()
 
     emit watermarkDone(bError);
 }
-#endif
 
 void AppLogic::setTargetObject(const QString &targetObject)
 {
