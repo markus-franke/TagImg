@@ -13,44 +13,77 @@ P4U_Page {
         fillMode: Image.PreserveAspectFit
         anchors { top: parent.top; topMargin: 5 }
 
+        DropArea {
+            anchors.fill: parent
+
+            onPositionChanged: {
+                //if(drag.y < sourceImage.y)
+                //console.log(drag.y)
+            }
+            onDropped: {
+                console.log("dropped")
+            }
+        }
+
         Image {
             id: watermarkImage
 
-            property bool bMoveWatermark : false
+            property bool bResizeWatermark : false
 
             height: parent.paintedHeight / 2
             fillMode: Image.PreserveAspectFit
             opacity: 0.5
 
+            Drag.active: watermarkArea.drag.active
+
             MouseArea {
                 id: watermarkArea
                 anchors.fill: parent
-
-                onPositionChanged: {
-                    if(mouse.y <= sourceImage.height)
-                    {
-                        if(parent.bMoveWatermark) {
-                            parent.x = mouse.x
-                            parent.y = mouse.y
-                        }
-                        else {
-                            cursorShape = Qt.SizeBDiagCursor
-                            parent.height = mouse.y
-                        }
-                    }
-                }
-
-                onPressAndHold: {
-                    cursorShape = Qt.SizeAllCursor
-                    parent.bMoveWatermark = true
-                }
-
-                onReleased: {
-                    cursorShape = Qt.ArrowCursor
-                    parent.bMoveWatermark = false
-                }
+                drag.target: parent
+                drag.minimumY: 0
+                drag.maximumY: sourceImage.height - parent.height
+                drag.minimumX: 0
+                drag.maximumX: sourceImage.width - parent.width
             }
         }
+
+
+//        MouseArea {
+//            id: sourceArea
+//            anchors.fill: parent
+//            hoverEnabled: true
+//            acceptedButtons: Qt.LeftButton
+//            property int oldMouseY;
+//
+//            onPositionChanged: {
+//                console.log("pos: ", mouse.x, " ", mouse.y)
+//                if(mouse.buttons == 0)
+//                {
+//                    if(mouse.y <= 5 || mouse.y > parent.height - 5) {
+//                        cursorShape = Qt.SizeVerCursor
+//                        watermarkImage.bResizeWatermark = true
+//                        watermarkImage.oldMouseY = mouse.y
+//                    }
+//                    else if(mouse.x <= 5 || mouse.x > parent.width - 5) {
+//                        cursorShape = Qt.SizeHorCursor
+//                        watermarkImage.bResizeWatermark = true
+//                    }
+//                    else {
+//                        cursorShape = Qt.SizeAllCursor
+//                        watermarkImage.bResizeWatermark = false
+//                    }
+//                }
+//                else if(pressed && watermarkImage.bResizeWatermark)
+//                {
+//                    if(mouse.y <= sourceImage.height)
+//                    {
+//                        parent.height += mouse.y - watermarkImage.oldMouseY
+//                        console.log("resize", mouse.y - watermarkImage.oldMouseY)
+//                        watermarkImage.oldMouseY = mouse.y
+//                    }
+//                }
+//            }
+//        }
     }
 
     P4U_Slider {
