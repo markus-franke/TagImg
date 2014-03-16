@@ -1,23 +1,27 @@
-# Add more folders to ship with the application, here
-folder_01.source = qml/P4UGui
-folder_01.target = qml
-DEPLOYMENTFOLDERS = folder_01
-
 # Additional import path used to resolve QML modules in Creator's code model
 QML_IMPORT_PATH =
 
 QT -= network
 
+QT += qml quick
+
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
     applogic.cpp
 
-# Please do not modify the following two lines. Required for deployment.
-include(qtquick2applicationviewer/qtquick2applicationviewer.pri)
-qtcAddDeployment()
-
 RESOURCES += \
     qml/P4UGui/resources.qrc
+
+OTHER_FILES += \
+    qml/P4UGui/FileBrowser.qml \
+    qml/P4UGui/P4U_Button.qml \
+    qml/P4UGui/P4U_Page.qml \
+    qml/P4UGui/P4U_Slider.qml \
+    qml/P4UGui/main.qml \
+    qml/P4UGui/P4U_Message.qml \
+    qml/P4UGui/P4U_ProgressBar.qml \
+    qml/P4UGui/ViewWatermark.qml \
+    qml/P4UGui/MainWindow.qml
 
 HEADERS += \
     applogic.h

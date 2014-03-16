@@ -45,7 +45,7 @@ Item {
                 onMouseXChanged: valueChanged(mouseX / width * 100)
             }
 
-            Keys.onRightPressed: valueChanged(currentValue + 1)
+            Keys.onRightPressed: { console.log("right"); valueChanged(currentValue + 1) }
             Keys.onLeftPressed: valueChanged(currentValue - 1)
         }
 

@@ -14,5 +14,6 @@
         <file>P4U_Slider.qml</file>
         <file>P4U_ProgressBar.qml</file>
         <file>main.qml</file>
+        <file>MainWindow.qml</file>
     </qresource>
 </RCC>

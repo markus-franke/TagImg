@@ -2,8 +2,6 @@ import QtQuick 2.0
 
 Rectangle {
     id: page
-    width: 370
-    height: 330
     visible: false
 
     NumberAnimation on opacity {

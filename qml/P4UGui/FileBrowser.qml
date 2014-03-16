@@ -4,7 +4,6 @@ import "MultiSelect.js" as MultiSelect
 
 P4U_Page {
     id: fileBrowser
-    anchors.fill: parent
 
     property bool bChooseFolder : true
     property bool bMultiSelect  : false
@@ -157,8 +156,8 @@ P4U_Page {
             onClicked: {
                 MultiSelect.clear()
                 processWorklist(MultiSelect.selectedValues())
+                pageStack.pop()
             }
-            //visible: false
         }
     }
 

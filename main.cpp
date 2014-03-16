@@ -1,14 +1,12 @@
 #include <QtGui/QGuiApplication>
 #include <QQmlApplicationEngine>
 
-#include "qtquick2applicationviewer.h"
-
 #include <applogic.h>
 
-#include <QQuickItem>
 #include <QThread>
 #include <QDebug>
 #include <QQmlContext>
+#include <QQuickWindow>
 
 int main(int argc, char *argv[])
 {
@@ -16,12 +14,14 @@ int main(int argc, char *argv[])
 
     AppLogic appLogic;
 
-    QtQuick2ApplicationViewer viewer;
-    viewer.rootContext()->setContextProperty("AppLogic", &appLogic);
-    viewer.setSource(QStringLiteral("qrc:///main.qml"));
-    viewer.setTitle("P4U Gui");
-    viewer.setIcon(QIcon("qrc:///icons/Watermark.png"));
-    viewer.showExpanded();
+    QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("AppLogic", &appLogic);
+    engine.load(QUrl("qrc:///main.qml"));
+
+    QQuickWindow* window = qobject_cast<QQuickWindow *>(engine.rootObjects().at(0));
+    window->setTitle("P4U Gui");
+    window->setIcon(QIcon("qrc:///icons/Watermark.png"));
+    window->show();
 
     // start new thread for application logic
     QThread appLogicThread;
@@ -30,18 +30,18 @@ int main(int argc, char *argv[])
 
     // connect signals between GUI and application
     // GUI -> App
-    QObject::connect(viewer.rootObject(), SIGNAL(applyWatermark()), &appLogic, SLOT(applyWatermark()));
-    QObject::connect(viewer.rootObject(), SIGNAL(setTargetObject(QString)), &appLogic, SLOT(setTargetObject(QString)));
-    QObject::connect(viewer.rootObject(), SIGNAL(setWorklist(QVariant)), &appLogic, SLOT(setWorklist(QVariant)));
-    QObject::connect(viewer.rootObject(), SIGNAL(setImageScale(int)), &appLogic, SLOT(setImageScale(int)));
-    QObject::connect(viewer.rootObject(), SIGNAL(setWatermark(QString)), &appLogic, SLOT(setWatermark(QString)));
+    QObject::connect(window, SIGNAL(applyWatermark()), &appLogic, SLOT(applyWatermark()));
+    QObject::connect(window, SIGNAL(setTargetObject(QString)), &appLogic, SLOT(setTargetObject(QString)));
+    QObject::connect(window, SIGNAL(setWorklist(QVariant)), &appLogic, SLOT(setWorklist(QVariant)));
+    QObject::connect(window, SIGNAL(setImageScale(int)), &appLogic, SLOT(setImageScale(int)));
+    QObject::connect(window, SIGNAL(setWatermark(QString)), &appLogic, SLOT(setWatermark(QString)));
     // App -> GUI
-    QObject::connect(&appLogic, SIGNAL(watermarkDone(int)), viewer.rootObject(), SIGNAL(watermarkDone(int)));
-    QObject::connect(&appLogic, SIGNAL(targetObjectChanged(QString)), viewer.rootObject(), SIGNAL(targetObjectChanged(QString)));
-    QObject::connect(&appLogic, SIGNAL(watermarkChanged(QString)), viewer.rootObject(), SIGNAL(watermarkChanged(QString)));
-    QObject::connect(&appLogic, SIGNAL(setProgressValue(int)), viewer.rootObject(), SIGNAL(setProgressValue(int)));
-    QObject::connect(&appLogic, SIGNAL(imageScaleChanged(int)), viewer.rootObject(), SIGNAL(imageScaleChanged(int)));
-    QObject::connect(&appLogic, SIGNAL(dependencyError(QString)), viewer.rootObject(), SIGNAL(dependencyError(QString)));
+    QObject::connect(&appLogic, SIGNAL(watermarkDone(int)), window, SIGNAL(watermarkDone(int)));
+    QObject::connect(&appLogic, SIGNAL(targetObjectChanged(QString)), window, SIGNAL(targetObjectChanged(QString)));
+    QObject::connect(&appLogic, SIGNAL(watermarkChanged(QString)), window, SIGNAL(watermarkChanged(QString)));
+    QObject::connect(&appLogic, SIGNAL(setProgressValue(int)), window, SIGNAL(setProgressValue(int)));
+    QObject::connect(&appLogic, SIGNAL(imageScaleChanged(int)), window, SIGNAL(imageScaleChanged(int)));
+    QObject::connect(&appLogic, SIGNAL(dependencyError(QString)), window, SIGNAL(dependencyError(QString)));
 
     // read default settings
     appLogic.readDefaultSettings();
