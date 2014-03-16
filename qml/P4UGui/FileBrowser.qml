@@ -147,6 +147,7 @@ P4U_Page {
                     processWorklist(foldermodel.folder + "/" + listView.currentItem.myData.fileName)
 
                 MultiSelect.clear()
+                pageStack.pop()
             }
         }
 

@@ -18,7 +18,7 @@ P4U_Page {
             width: buttonGrid.width/buttonGrid.columns - buttonGrid.anchors.margins - buttonGrid.spacing/2
             height: mainWindow.height / 5.5
             text: "Choose File/Folder"
-            onClicked: pageStack.push({item: "qrc:/FileBrowser.qml", properties: {bMultiSelect: true}})
+            onClicked: pageStack.push(chooseFileFolderBrowser)
         }
 
         Text {
@@ -46,7 +46,7 @@ P4U_Page {
             height: chooseFileFolderButton.height
             text: "Choose Watermark"
 
-            onClicked: pageStack.push({item: "qrc:/FileBrowser.qml", properties: {bMultiSelect: false}})
+            onClicked: pageStack.push(chooseWatermarkBrowser)
         }
 
         Image {
@@ -57,7 +57,6 @@ P4U_Page {
             MouseArea {
                 anchors.fill: parent
                 onClicked: pageStack.push({item: "qrc:/ViewWatermark.qml", properties: {watermark: currentWatermark.source, source: workloadList.fullObjectName}})
-                onPressAndHold: console.debug("pressnhold")
             }
         }
 
@@ -120,4 +119,27 @@ P4U_Page {
             }
         }
     }
+
+    Component {
+        id: chooseFileFolderBrowser
+
+        FileBrowser {
+            bMultiSelect: true
+            onProcessWorklist: AppLogic.setWorklist(worklist)
+        }
+    }
+
+    Component {
+        id: chooseWatermarkBrowser
+
+        FileBrowser {
+            bMultiSelect: false
+            onProcessWorklist: AppLogic.setWatermark(worklist)
+        }
+    }
+
+    function watermarkChanged(watermark) {
+        currentWatermark.source = watermark
+    }
+
 }

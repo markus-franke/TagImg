@@ -9,8 +9,17 @@ ApplicationWindow {
 
     StackView {
         id: pageStack
-        initialItem: Qt.resolvedUrl("qrc:/MainWindow.qml")
+        initialItem: mainWindowComp
     }
+
+    Component {
+        id: mainWindowComp
+        MainWindow {
+            id: mainWindow
+        }
+    }
+
+    onWatermarkChanged: mainWindow.watermarkChanged(watermark)
 
 
 //    FileBrowser {
@@ -74,10 +83,6 @@ ApplicationWindow {
 //        id: messageBox
 //        visible: false
 //    }
-
-//    Component.onCompleted: show()
-
-//    onVisibleChanged: console.debug("main.qml is ", visible ? "visible": "invisible")
 
     // outgoing
     signal applyWatermark()
