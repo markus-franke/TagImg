@@ -11,6 +11,7 @@ Rectangle {
     color: "lightblue"
     radius: 5
     border.width: 2
+    visible: false
 
     Text {
         id: messageText

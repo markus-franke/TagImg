@@ -142,4 +142,25 @@ P4U_Page {
         currentWatermark.source = watermark
     }
 
+    function targetObjectChanged(name) {
+        workloadList.setObject(name)
+    }
+
+    function dependencyError() {
+        applyWatermarkButton.enabled = false;
+    }
+
+    function imageScaleChanged(percent) {
+        sliderScaleOfImage.currentValue = percent
+    }
+
+    function setProgressValue(value) {
+        progressBar.value = value
+        if(progressBar.opacity == 0)
+            progressBar.opacity = 1.0
+    }
+
+    function watermarkDone() {
+        progressBar.opacity = 0.0
+    }
 }

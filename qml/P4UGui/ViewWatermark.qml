@@ -5,8 +5,6 @@ P4U_Page {
     property alias watermark: watermarkImage.source
     property alias source: sourceImage.source
 
-    anchors.fill: parent
-
     Image {
         id: sourceImage
         width: parent.width
@@ -98,7 +96,7 @@ P4U_Page {
     P4U_Button {
         id: okButton
         text: "Ok"
-        onClicked: hide()
+        onClicked: pageStack.pop()
         anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 10 }
     }
 }
