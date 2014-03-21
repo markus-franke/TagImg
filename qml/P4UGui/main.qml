@@ -17,6 +17,27 @@ ApplicationWindow {
 
     MainWindow {
         id: mainWindow
+
+        DropArea {
+            anchors.fill: parent
+
+            Rectangle {
+                anchors.fill: parent
+                color: "lightgreen"
+                visible: parent.containsDrag
+            }
+
+            onDropped: {
+                if(drop.urls.length > 0)
+                {
+                    var targetObject = drop.urls
+                    console.log("Dropped ", targetObject)
+                    AppLogic.setWorklist(targetObject)
+                }
+            }
+        }
+
+        onApplyWatermark: rootWindow.applyWatermark()
     }
 
     onWatermarkChanged: mainWindow.watermarkChanged(watermark)
@@ -49,10 +70,6 @@ ApplicationWindow {
 
     // outgoing
     signal applyWatermark()
-    signal setTargetObject(string name)
-    signal setWorklist(var worklist)
-    signal setImageScale(int percent)
-    signal setWatermark(string name)
 
     // incoming
     signal watermarkDone(int exitCode)
@@ -60,5 +77,5 @@ ApplicationWindow {
     signal watermarkChanged(string watermark)
     signal setProgressValue(int value)
     signal imageScaleChanged(int percent)
-    signal dependencyError(string dependencies);
+    signal dependencyError(string dependencies)
 }

@@ -6,6 +6,7 @@
 #include <QDir>
 #include <QProcess>
 #include <QGuiApplication>
+#include <QUrl>
 
 // define some keys for the default settings
 #define KEY_WATERMARK "watermark"
@@ -184,11 +185,31 @@ void AppLogic::setTargetObject(const QString &targetObject)
     // qDebug() << m_strTargetObject;
 }
 
-void AppLogic::setWorklist(const QVariant &worklist)
+void AppLogic::setWorklist(const QVariant& worklist)
 {
-    if(worklist.toStringList() == m_lWorklist) return;
+    QStringList stringList;
 
-    m_lWorklist = worklist.toStringList();
+    if(worklist.canConvert(QVariant::List))
+    {
+        QList<QUrl> list = worklist.value<QList<QUrl> >();
+        qDebug() << "List is " << list << "length: " << list.length();
+
+
+        // convert to stringlist
+        for(int i = 0; i < list.length(); ++i)
+        {
+            stringList.append(list.at(i).toString());
+        }
+    }
+    else
+    {
+        stringList.append(worklist.toString());
+    }
+
+    if(stringList == m_lWorklist)
+        return;
+
+    m_lWorklist = stringList;
     QString targetObject = "";
     if(!m_lWorklist.empty()) {
         if(m_lWorklist.count() == 1)

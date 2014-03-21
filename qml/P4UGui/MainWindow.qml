@@ -163,4 +163,6 @@ P4U_Page {
     function watermarkDone() {
         progressBar.opacity = 0.0
     }
+
+    signal applyWatermark()
 }
