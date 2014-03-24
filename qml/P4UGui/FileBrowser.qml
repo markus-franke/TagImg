@@ -89,6 +89,7 @@ P4U_Page {
                             console.debug("File", fileName, "has been chosen")
                             MultiSelect.addValue(foldermodel.folder + "/" + fileName)
                             processWorklist(MultiSelect.selectedValues())
+                            pageStack.pop()
                         }
                     }
 
