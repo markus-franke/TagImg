@@ -191,14 +191,19 @@ void AppLogic::setWorklist(const QVariant& worklist)
 
     if(worklist.canConvert(QVariant::List))
     {
-        QList<QUrl> list = worklist.value<QList<QUrl> >();
-        qDebug() << "List is " << list << "length: " << list.length();
+        stringList = worklist.toStringList();
 
-
-        // convert to stringlist
-        for(int i = 0; i < list.length(); ++i)
+        if(stringList.isEmpty())
         {
-            stringList.append(list.at(i).toString());
+            QList<QUrl> list = worklist.value<QList<QUrl> >();
+            qDebug() << "List is " << list << "length: " << list.length();
+
+
+            // convert to stringlist
+            for(int i = 0; i < list.length(); ++i)
+            {
+                stringList.append(list.at(i).toString());
+            }
         }
     }
     else
