@@ -24,6 +24,7 @@ ApplicationWindow {
             Rectangle {
                 anchors.fill: parent
                 color: "lightgreen"
+                opacity: 0.5
                 visible: parent.containsDrag
             }
 
