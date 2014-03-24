@@ -25,6 +25,7 @@ private:
     QStringList m_lWorklist;
     QString m_strWatermark;
     int m_iImageScalePct;
+    int m_iWatermarkScalePct;
 
     void writeDefaultSettings() const;
     int checkForExecutable(QString executable) const;
