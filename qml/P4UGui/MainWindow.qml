@@ -1,4 +1,6 @@
 import QtQuick 2.0
+import QtQuick.Controls 1.1
+import QtQuick.Controls.Styles 1.1
 
 P4U_Page {
     id: mainWindow
@@ -71,13 +73,10 @@ P4U_Page {
 
         P4U_Slider {
             id: sliderScaleOfImage
-            color: textScaleOfImage.color
-            font: textScaleOfImage.font
             width: workloadList.width
             height: textScaleOfImage.height
-            focus: true
 
-            onValueChanged: setImageScale(value)
+            onValueChanged: AppLogic.setImageScale(value)
         }
     }
 
@@ -151,7 +150,7 @@ P4U_Page {
     }
 
     function imageScaleChanged(percent) {
-        sliderScaleOfImage.currentValue = percent
+        sliderScaleOfImage.value = percent
     }
 
     function setProgressValue(value) {
@@ -162,6 +161,10 @@ P4U_Page {
 
     function watermarkDone() {
         progressBar.opacity = 0.0
+    }
+
+    function watermarkSizeChanged(scaleXPct, scaleYPct) {
+
     }
 
     signal applyWatermark()
