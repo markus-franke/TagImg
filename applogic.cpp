@@ -9,8 +9,11 @@
 #include <QUrl>
 
 // define some keys for the default settings
-#define KEY_WATERMARK "watermark"
-#define KEY_SCALE_PCT "scale_pct"
+#define KEY_WATERMARK       "watermark"
+#define KEY_SCALE_PCT       "scale_pct"
+#define KEY_WATERMARK_POSX  "watermark_posx"
+#define KEY_WATERMARK_POSY  "watermark_posy"
+#define KEY_WATERMARK_SCALE "watermark_scale"
 
 // define some ImageMagick binaries
 #define BIN_MOGRIFY     "mogrify"
@@ -41,6 +44,8 @@ void AppLogic::readDefaultSettings()
 
     setWatermark(m_pDefaultSettings->value(KEY_WATERMARK, "").toString());
     setImageScale(m_pDefaultSettings->value(KEY_SCALE_PCT, 50).toInt());
+    setWatermarkPos(m_pDefaultSettings->value(KEY_WATERMARK_POSX, 0).toInt(), m_pDefaultSettings->value(KEY_WATERMARK_POSY, 0).toInt());
+    setWatermarkSize(m_pDefaultSettings->value(KEY_WATERMARK_SCALE, 50).toInt(), m_pDefaultSettings->value(KEY_WATERMARK_SCALE, 50).toInt());
 }
 
 void AppLogic::writeDefaultSettings() const
@@ -49,6 +54,9 @@ void AppLogic::writeDefaultSettings() const
 
     m_pDefaultSettings->setValue(KEY_WATERMARK, m_strWatermark);
     m_pDefaultSettings->setValue(KEY_SCALE_PCT, m_iImageScalePct);
+    m_pDefaultSettings->setValue(KEY_WATERMARK_POSX, m_WMGeometry.getPosPct().first);
+    m_pDefaultSettings->setValue(KEY_WATERMARK_POSY, m_WMGeometry.getPosPct().second);
+    m_pDefaultSettings->setValue(KEY_WATERMARK_SCALE, m_WMGeometry.getSizePct().first);
 }
 
 void AppLogic::checkDeps()
@@ -85,6 +93,36 @@ QString AppLogic::getPathPrefix()
 #else
     return "";
 #endif
+}
+
+void AppLogic::setWatermarkPos(int posXPct, int posYPct)
+{
+    m_WMGeometry.setPosPct(posXPct, posYPct);
+}
+
+int AppLogic::getWatermarkPosX(int imageWidth)
+{
+    return m_WMGeometry.getPosX(imageWidth);
+}
+
+int AppLogic::getWatermarkPosY(int imageHeight)
+{
+    return m_WMGeometry.getPosY(imageHeight);
+}
+
+void AppLogic::setWatermarkSize(int scaleXPct, int scaleYPct)
+{
+    m_WMGeometry.setSizePct(scaleXPct, scaleYPct);
+}
+
+int AppLogic::getWatermarkSize(int imageWidth)
+{
+    return m_WMGeometry.getWidth(imageWidth);
+}
+
+int AppLogic::getWatermarkSizePct()
+{
+    return m_WMGeometry.getSizePct().first;
 }
 
 int AppLogic::checkForExecutable(QString executable) const
@@ -153,10 +191,12 @@ void AppLogic::applyWatermark()
         qDebug() << currentFile;
         bError = true;
 
+        // rotate'n'resize
         m_pP4UProcess->start(QString("%1 -auto-orient -resize %2% \"%3\"").arg(BIN_MOGRIFY).arg(m_iImageScalePct).arg(currentFile));
         if(!m_pP4UProcess->waitForFinished(processTimeoutMs) || m_pP4UProcess->exitCode() != 0)
             break;
 
+        // apply watermark
         m_pP4UProcess->start(QString("%1 -dissolve 50 -gravity northeast -geometry +50+0 %2 \"%3\" \"%4\"").arg(BIN_COMPOSITE).arg(m_strWatermark).arg(currentFile).arg(currentFile));
         if(!m_pP4UProcess->waitForFinished(processTimeoutMs) || m_pP4UProcess->exitCode() != 0)
             break;

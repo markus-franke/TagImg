@@ -46,6 +46,7 @@ ApplicationWindow {
     onImageScaleChanged: mainWindow.imageScaleChanged(percent)
     onSetProgressValue: mainWindow.setProgressValue(value)
 
+
     onDependencyError: {
         showMessage("Unable to find one or more dependencies (" + dependencies + ") of P4UGui. They are either not installed or not in the PATH.")
         mainWindow.dependencyError()
@@ -58,6 +59,10 @@ ApplicationWindow {
             showMessage("Error " + exitCode + " while applying watermark!")
 
         mainWindow.watermarkDone()
+    }
+
+    onWatermarkSizeChanged: {
+        mainWindow.watermarkSizeChanged(scaleXPct, scaleYPct)
     }
 
     function showMessage(message) {
@@ -79,4 +84,5 @@ ApplicationWindow {
     signal setProgressValue(int value)
     signal imageScaleChanged(int percent)
     signal dependencyError(string dependencies)
+    signal watermarkSizeChanged(int scaleXPct, int scaleYPct)
 }

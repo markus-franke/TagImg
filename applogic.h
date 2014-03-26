@@ -5,6 +5,8 @@
 #include <QProcess>
 #include <QSettings>
 
+#include <wmgeometry.h>
+
 class AppLogic : public QObject
 {
     Q_OBJECT
@@ -14,9 +16,16 @@ public:
     
     void readDefaultSettings();
     void checkDeps();
+
     Q_INVOKABLE QString getDefaultDir();
     Q_INVOKABLE QString fixPath(QString filePath);
     Q_INVOKABLE QString getPathPrefix();
+    Q_INVOKABLE void setWatermarkPos(int posXPct, int posYPct);
+    Q_INVOKABLE int getWatermarkPosX(int imageWidth);
+    Q_INVOKABLE int getWatermarkPosY(int imageHeight);
+    Q_INVOKABLE void setWatermarkSize(int scaleXPct, int scaleYPct);
+    Q_INVOKABLE int getWatermarkSize(int imageWidth);
+    Q_INVOKABLE int getWatermarkSizePct();
 
 private:
     QProcess* m_pP4UProcess;
@@ -25,7 +34,7 @@ private:
     QStringList m_lWorklist;
     QString m_strWatermark;
     int m_iImageScalePct;
-    int m_iWatermarkScalePct;
+    WMGeometry m_WMGeometry;
 
     void writeDefaultSettings() const;
     int checkForExecutable(QString executable) const;
@@ -38,6 +47,7 @@ signals:
     void setProgressValue(int value);
     void imageScaleChanged(int percent);
     void dependencyError(const QString& dependencies);
+    void watermarkSizeChanged(int scaleXPct, int scaleYPct);
 
 public slots:
     void applyWatermark();

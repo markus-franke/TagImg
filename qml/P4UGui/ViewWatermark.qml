@@ -10,12 +10,13 @@ P4U_Page {
     Column {
         anchors.fill: parent
         spacing: 10
+        anchors.margins: 10
 
         Image {
             id: sourceImage
-            width: parent.width * 0.8
+            height: parent.height * 0.6
             fillMode: Image.PreserveAspectFit
-            anchors { horizontalCenter: parent.horizontalCenter }
+            anchors { horizontalCenter: parent.horizontalCenter; }
 
             DropArea {
                 anchors.fill: parent
@@ -23,12 +24,14 @@ P4U_Page {
 
             Image {
                 id: watermarkImage
+                x: AppLogic.getWatermarkPosX(parent.width - width)
+                y: AppLogic.getWatermarkPosY(parent.height - height)
+                width: AppLogic.getWatermarkSize(parent.width);
 
     //            property bool bResizeWatermarkVert : false
     //            property bool bResizeWatermarkHoriz: false
     //            property int oldMousePos;
 
-                height: parent.paintedHeight / 3
                 fillMode: Image.PreserveAspectFit
                 opacity: 0.5
 
@@ -95,44 +98,40 @@ P4U_Page {
             }
         }
 
-        RowLayout {
+        GridLayout {
+            rows: 2
+            columns: 2
             width: parent.width
-            spacing: 5
 
             Text {
                 text: "Opacity"
+                color: "white"
+                font.bold: true
             }
 
-            Slider {
+            P4U_Slider {
                 id: sliderOpacity
                 Layout.fillWidth: true
-                orientation: Qt.Horizontal
-                minimumValue: 0
-                maximumValue: 100
                 value: watermarkImage.opacity * 100
                 onValueChanged: {
                     watermarkImage.opacity = value/100.0
                 }
             }
-        }
-
-        RowLayout {
-            width: parent.width
-            spacing: 5
 
             Text {
                 text: "Scale"
+                color: "white"
+                font.bold: true
             }
 
-            Slider {
+            P4U_Slider {
                 id: sliderScale
                 Layout.fillWidth: true
-                orientation: Qt.Horizontal
-                minimumValue: 0
-                maximumValue: 100
-                value: watermarkImage.opacity * 100
+                value: AppLogic.getWatermarkSizePct();
                 onValueChanged: {
-                    watermarkImage.opacity = value/100.0
+                    AppLogic.setWatermarkSize(value, value)
+                    if(sourceImage.paintedWidth != 0)
+                        watermarkImage.width=AppLogic.getWatermarkSize(sourceImage.paintedWidth);
                 }
             }
         }
@@ -140,8 +139,19 @@ P4U_Page {
         P4U_Button {
             id: okButton
             text: "Ok"
-            onClicked: pageStack.pop()
+            onClicked: {
+                //console.log("x: ", watermarkImage.x, ", y: ", watermarkImage.y)
+                var setX = Math.round(watermarkImage.x * 100 / (sourceImage.width - watermarkImage.width))
+                var setY = Math.round(watermarkImage.y * 100 / (sourceImage.height - watermarkImage.height))
+                //console.log("setX: ", setX, ", setY: ", setY)
+                AppLogic.setWatermarkPos(setX, setY)
+                pageStack.pop()
+            }
             anchors { horizontalCenter: parent.horizontalCenter }
         }
+    }
+
+    function watermarkSizeChanged(scaleXPct, scaleYPct) {
+
     }
 }

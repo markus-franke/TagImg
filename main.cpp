@@ -39,6 +39,7 @@ int main(int argc, char *argv[])
     QObject::connect(&appLogic, SIGNAL(setProgressValue(int)), window, SIGNAL(setProgressValue(int)));
     QObject::connect(&appLogic, SIGNAL(imageScaleChanged(int)), window, SIGNAL(imageScaleChanged(int)));
     QObject::connect(&appLogic, SIGNAL(dependencyError(QString)), window, SIGNAL(dependencyError(QString)));
+    QObject::connect(&appLogic, SIGNAL(watermarkSizeChanged(int,int)), window, SIGNAL(watermarkSizeChanged(int,int)));
 
     // read default settings
     appLogic.readDefaultSettings();
