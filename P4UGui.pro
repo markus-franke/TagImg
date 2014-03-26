@@ -7,7 +7,8 @@ QT += qml quick
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
-    applogic.cpp
+    applogic.cpp \
+    wmgeometry.cpp
 
 RESOURCES += \
     qml/P4UGui/resources.qrc
@@ -24,4 +25,5 @@ OTHER_FILES += \
     qml/P4UGui/MainWindow.qml
 
 HEADERS += \
-    applogic.h
+    applogic.h \
+    wmgeometry.h
