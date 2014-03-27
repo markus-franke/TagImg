@@ -33,7 +33,7 @@ P4U_Page {
     //            property int oldMousePos;
 
                 fillMode: Image.PreserveAspectFit
-                opacity: 0.5
+                opacity: AppLogic.getWatermarkOpacity() / 100.0
 
                 Drag.active: watermarkArea.drag.active
 
@@ -112,9 +112,10 @@ P4U_Page {
             P4U_Slider {
                 id: sliderOpacity
                 Layout.fillWidth: true
-                value: watermarkImage.opacity * 100
+                value: AppLogic.getWatermarkOpacity();
                 onValueChanged: {
-                    watermarkImage.opacity = value/100.0
+                    AppLogic.setWatermarkOpacity(value)
+                    watermarkImage.opacity=AppLogic.getWatermarkOpacity() / 100;
                 }
             }
 

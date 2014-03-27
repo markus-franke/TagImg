@@ -26,9 +26,9 @@ P4U_Page {
         Text {
             id: workloadList
 
-            property string fullObjectName/* : "file:///home/user/Desktop/india_orig.jpg"*/;
+            property string fullObjectName : /*"file:///home/user/Desktop/india_orig.jpg"*/;
 
-            text: "  "
+            text: ""
             color: "white"
             font { bold: true; pointSize: 12 }
             wrapMode: Text.Wrap
@@ -58,7 +58,12 @@ P4U_Page {
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: pageStack.push({item: "qrc:/ViewWatermark.qml", properties: {watermark: currentWatermark.source, source: workloadList.fullObjectName}})
+                onClicked: {
+                    if(workloadList.text == "")
+                        showMessage("Please choose any file or folder!")
+                    else
+                        pageStack.push({item: "qrc:/ViewWatermark.qml", properties: {watermark: currentWatermark.source, source: workloadList.fullObjectName}})
+                }
             }
         }
 
@@ -100,7 +105,7 @@ P4U_Page {
             text: "Apply Watermark"
 
             onClicked: {
-                if(workloadList.text == "  ")
+                if(workloadList.text == "")
                     showMessage("Please choose any file or folder!")
                 else
                     applyWatermark()

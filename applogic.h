@@ -26,6 +26,8 @@ public:
     Q_INVOKABLE void setWatermarkSize(int scaleXPct, int scaleYPct);
     Q_INVOKABLE int getWatermarkSize(int imageWidth);
     Q_INVOKABLE int getWatermarkSizePct();
+    Q_INVOKABLE int getWatermarkOpacity();
+    Q_INVOKABLE void setWatermarkOpacity(int opacity);
 
 private:
     QProcess* m_pP4UProcess;
@@ -35,10 +37,12 @@ private:
     QString m_strWatermark;
     int m_iImageScalePct;
     WMGeometry m_WMGeometry;
+    int m_iWatermarkOpacity;
 
     void writeDefaultSettings() const;
     int checkForExecutable(QString executable) const;
     int checkForImageMagick() const;
+    QString cleanPath(QString filePath);
 
 signals:
     void watermarkDone(int exitCode);
@@ -48,6 +52,7 @@ signals:
     void imageScaleChanged(int percent);
     void dependencyError(const QString& dependencies);
     void watermarkSizeChanged(int scaleXPct, int scaleYPct);
+    void watermarkOpacityChanged(int opacity);
 
 public slots:
     void applyWatermark();

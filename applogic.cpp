@@ -7,17 +7,21 @@
 #include <QProcess>
 #include <QGuiApplication>
 #include <QUrl>
+#include <QImage>
+#include <QFile>
 
 // define some keys for the default settings
-#define KEY_WATERMARK       "watermark"
-#define KEY_SCALE_PCT       "scale_pct"
-#define KEY_WATERMARK_POSX  "watermark_posx"
-#define KEY_WATERMARK_POSY  "watermark_posy"
-#define KEY_WATERMARK_SCALE "watermark_scale"
+#define KEY_SCALE_PCT           "scale_pct"
+#define KEY_WATERMARK           "watermark"
+#define KEY_WATERMARK_POSX      "watermark_posx"
+#define KEY_WATERMARK_POSY      "watermark_posy"
+#define KEY_WATERMARK_SCALE     "watermark_scale"
+#define KEY_WATERMARK_OPACITY   "watermark_opacity"
 
 // define some ImageMagick binaries
 #define BIN_MOGRIFY     "mogrify"
 #define BIN_COMPOSITE   "composite"
+#define BIN_CONVERT     "convert"
 
 AppLogic::AppLogic(QObject *parent) :
     QObject(parent),
@@ -46,6 +50,7 @@ void AppLogic::readDefaultSettings()
     setImageScale(m_pDefaultSettings->value(KEY_SCALE_PCT, 50).toInt());
     setWatermarkPos(m_pDefaultSettings->value(KEY_WATERMARK_POSX, 0).toInt(), m_pDefaultSettings->value(KEY_WATERMARK_POSY, 0).toInt());
     setWatermarkSize(m_pDefaultSettings->value(KEY_WATERMARK_SCALE, 50).toInt(), m_pDefaultSettings->value(KEY_WATERMARK_SCALE, 50).toInt());
+    setWatermarkOpacity(m_pDefaultSettings->value(KEY_WATERMARK_OPACITY, 50).toInt());
 }
 
 void AppLogic::writeDefaultSettings() const
@@ -57,6 +62,7 @@ void AppLogic::writeDefaultSettings() const
     m_pDefaultSettings->setValue(KEY_WATERMARK_POSX, m_WMGeometry.getPosPct().first);
     m_pDefaultSettings->setValue(KEY_WATERMARK_POSY, m_WMGeometry.getPosPct().second);
     m_pDefaultSettings->setValue(KEY_WATERMARK_SCALE, m_WMGeometry.getSizePct().first);
+    m_pDefaultSettings->setValue(KEY_WATERMARK_OPACITY, m_iWatermarkOpacity);
 }
 
 void AppLogic::checkDeps()
@@ -125,6 +131,20 @@ int AppLogic::getWatermarkSizePct()
     return m_WMGeometry.getSizePct().first;
 }
 
+int AppLogic::getWatermarkOpacity()
+{
+    return m_iWatermarkOpacity;
+}
+
+void AppLogic::setWatermarkOpacity(int opacity)
+{
+    if(m_iWatermarkOpacity != opacity)
+    {
+        m_iWatermarkOpacity = opacity;
+        emit watermarkOpacityChanged(m_iWatermarkOpacity);
+    }
+}
+
 int AppLogic::checkForExecutable(QString executable) const
 {
 #ifdef Q_OS_WIN
@@ -153,6 +173,12 @@ QString AppLogic::fixPath(QString filePath)
 {
     filePath.prepend("file://");
     return filePath;
+}
+
+QString AppLogic::cleanPath(QString resourcePath)
+{
+    resourcePath.remove("file://");
+    return resourcePath;
 }
 
 void AppLogic::applyWatermark()
@@ -186,20 +212,54 @@ void AppLogic::applyWatermark()
 
     QString currentFile;
     int processTimeoutMs = 10000;
-    for(int i = 0; i < fileList.length() && !bError; ++i) {
+    for(int i = 0; i < fileList.length() && !bError; ++i)
+    {
         currentFile = fileList.value(i);
-        qDebug() << currentFile;
+        qDebug() << "Current file: " << currentFile;
+
+        QString outFileDir = QFileInfo(currentFile).absolutePath() + QDir::separator() + "tagged";
+        QString outFileName = QFileInfo(currentFile).fileName();
+        QString outFile = QString("%1/%2").arg(outFileDir).arg(outFileName);
         bError = true;
 
+        // create output directory
+        QDir::root().mkdir(outFileDir);
+
         // rotate'n'resize
-        m_pP4UProcess->start(QString("%1 -auto-orient -resize %2% \"%3\"").arg(BIN_MOGRIFY).arg(m_iImageScalePct).arg(currentFile));
+        // qDebug() << QString("%1 -auto-orient -resize %2% \"%3\" %4").arg(BIN_CONVERT).arg(m_iImageScalePct).arg(currentFile).arg(outFile);
+        m_pP4UProcess->start(QString("%1 -auto-orient -resize %2% \"%3\" \"%4\"").arg(BIN_CONVERT).arg(m_iImageScalePct).arg(currentFile).arg(outFile));
         if(!m_pP4UProcess->waitForFinished(processTimeoutMs) || m_pP4UProcess->exitCode() != 0)
             break;
 
+        // generate watermark
+        QImage watermarkImg(cleanPath(m_strWatermark));
+        QImage currentFileImg(outFile);
+        QString tmpWatermark("watermark_tmp.jpg");
+
+//        qDebug() << "Dimensions of watermarkImg: " << watermarkImg.width() << " x " << watermarkImg.height();
+//        qDebug() << "Dimensions of currentFileImg: " << currentFileImg.width() << " x " << currentFileImg.height();
+
+        // resize watermark according to image size
+        if(currentFileImg.width() > currentFileImg.height())
+            watermarkImg = watermarkImg.scaledToWidth(m_WMGeometry.getSizePct().first / 100.0 * currentFileImg.width());
+        else
+            watermarkImg = watermarkImg.scaledToWidth(m_WMGeometry.getSizePct().first / 100.0 * currentFileImg.height());
+        watermarkImg.save(tmpWatermark);
+
+//        qDebug() << "Dimensions of watermarkImg after resize: " << watermarkImg.width() << " x " << watermarkImg.height();
+
         // apply watermark
-        m_pP4UProcess->start(QString("%1 -dissolve 50 -gravity northeast -geometry +50+0 %2 \"%3\" \"%4\"").arg(BIN_COMPOSITE).arg(m_strWatermark).arg(currentFile).arg(currentFile));
+        int offsetX = m_WMGeometry.getPosX(currentFileImg.width() - watermarkImg.width());
+        int offsetY = m_WMGeometry.getPosY(currentFileImg.height() - watermarkImg.height());
+
+//        qDebug() << "Offset of watermark is: " << offsetX << ", " << offsetY;
+
+        m_pP4UProcess->start(QString("%1 -dissolve %2 -gravity northwest -geometry +%3+%4 %5 \"%6\" \"%7\"").arg(BIN_COMPOSITE).arg(m_iWatermarkOpacity).arg(offsetX).arg(offsetY).arg(tmpWatermark).arg(outFile).arg(outFile));
         if(!m_pP4UProcess->waitForFinished(processTimeoutMs) || m_pP4UProcess->exitCode() != 0)
             break;
+
+        // remove temporary file again
+        QFile(tmpWatermark).remove();
 
         // set progress value
         emit setProgressValue(qRound((i+1) * 100.0 / fileList.length()));
@@ -257,10 +317,10 @@ void AppLogic::setWorklist(const QVariant& worklist)
     m_lWorklist = stringList;
     QString targetObject = "";
     if(!m_lWorklist.empty()) {
-        if(m_lWorklist.count() == 1)
+        //if(m_lWorklist.count() == 1)
             targetObject = m_lWorklist.first();
-        else
-            targetObject = "Multiple files";
+        /*else
+            targetObject = "Multiple files";*/
     }
 
     emit targetObjectChanged(targetObject);
