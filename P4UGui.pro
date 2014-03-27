@@ -8,8 +8,13 @@ QML_IMPORT_PATH =
 
 QT -= network
 
-# add Image Magick library
+QMAKE_LFLAGS += "-static"
+
+# add Image Magick libraries
 LIBS += -L$$PWD/utils/build/Magick++/lib/.libs -lMagick++-6.Q16
+LIBS += -L$$PWD/utils/build/magick/.libs -lMagickCore-6.Q16
+LIBS += -L$$PWD/utils/build/wand/.libs -lMagickWand-6.Q16
+
 INCLUDEPATH += utils/ImageMagick-6.8.8-7/Magick++/lib utils/ImageMagick-6.8.8-7 utils/build/
 
 DEFINES += MAGICKCORE_QUANTUM_DEPTH=16 MAGICKCORE_HDRI_ENABLE
