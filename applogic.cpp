@@ -199,11 +199,15 @@ void AppLogic::applyWatermark()
         listItem.remove("file://");
 #endif
         if(QFileInfo(listItem).isDir()) {
-            m_pP4UProcess->setWorkingDirectory(listItem);
             QDir directory(listItem);
             QStringList nameFilters;
-            nameFilters << "*.JPG" << "*.jpg";
-            fileList.append(directory.entryList(nameFilters));
+            nameFilters << "*.JPG" << "*.JPEG" << "*.jpg" << "*.jpeg";
+            QStringList entryList = directory.entryList(nameFilters);
+            QString entry;
+            foreach(entry, entryList)
+            {
+                fileList.append(listItem + QDir::separator() + entry);
+            }
         }
         else {
             fileList.append(listItem);
@@ -214,13 +218,13 @@ void AppLogic::applyWatermark()
     int processTimeoutMs = 10000;
     for(int i = 0; i < fileList.length() && !bError; ++i)
     {
+        bError = true;
         currentFile = fileList.value(i);
         qDebug() << "Current file: " << currentFile;
 
         QString outFileDir = QFileInfo(currentFile).absolutePath() + QDir::separator() + "tagged";
         QString outFileName = QFileInfo(currentFile).fileName();
         QString outFile = QString("%1/%2").arg(outFileDir).arg(outFileName);
-        bError = true;
 
         // create output directory
         QDir::root().mkdir(outFileDir);
