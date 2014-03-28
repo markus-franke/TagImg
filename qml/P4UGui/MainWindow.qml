@@ -26,7 +26,7 @@ P4U_Page {
         Text {
             id: workloadList
 
-            property string fullObjectName : /*"file:///home/user/Desktop/india_orig.jpg"*/;
+            property string fullObjectName /*: "file:///home/user/Desktop/india_orig.jpg"*/;
 
             text: ""
             color: "white"
