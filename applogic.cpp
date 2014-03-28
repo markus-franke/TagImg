@@ -172,6 +172,7 @@ int AppLogic::checkForImageMagick() const
 QString AppLogic::fixPath(QString filePath)
 {
     filePath.prepend("file://");
+    filePath = QDir::cleanPath(filePath);
     return filePath;
 }
 
