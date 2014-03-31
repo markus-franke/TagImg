@@ -71,7 +71,7 @@ P4U_Page {
                 Item {
                     id: item
                     width: parent.width
-                    height: 15
+                    height: listView.height / 15
 
                     property variant myData: model
                     property bool bSelected: false
