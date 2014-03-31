@@ -32,7 +32,7 @@ P4U_Page {
 
             function setFolder(folder) {
                 console.log("setFolder: ", folder)
-                text = folder.toString().slice(7)
+                text = AppLogic.cleanPath(folder.toString())
             }
         }
 
@@ -79,11 +79,12 @@ P4U_Page {
                     function folderSelected()
                     {
                         if (ListView.view.model.isFolder(index)) {
-                            ListView.view.model.folder = AppLogic.fixPath(filePath)
+                            var folder = AppLogic.fixPath(filePath)
+                            ListView.view.model.folder = folder
                             MultiSelect.clear()
                             if(ListView.view.count > 0)
                                 ListView.view.currentIndex = 0
-                            console.debug("Changing to folder: ", ListView.view.model.folder)
+                            console.debug("Changing to folder: ", folder)
                         }
                         else {
                             console.debug("File", fileName, "has been chosen")
