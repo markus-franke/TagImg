@@ -84,12 +84,16 @@ void AppLogic::checkDeps()
 
 QString AppLogic::getDefaultDir()
 {
+#ifndef Q_OS_ANDROID
     QString homePath = QDir::homePath();
 
     homePath.prepend("file://");
     homePath.append("/Desktop");
 
     return homePath;
+#else
+    return "file:///";
+#endif
 }
 
 QString AppLogic::getPathPrefix()
@@ -178,6 +182,7 @@ QString AppLogic::fixPath(QString filePath)
 QString AppLogic::cleanPath(QString resourcePath)
 {
     resourcePath.remove("file://");
+    resourcePath = QDir::cleanPath(resourcePath);
     return resourcePath;
 }
 
