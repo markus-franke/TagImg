@@ -26,7 +26,7 @@ P4U_Page {
         Text {
             id: workloadList
 
-            property string fullObjectName /*: "file:///home/user/Desktop/india_orig.jpg"*/;
+            property string fullObjectName /*: "file:///home/user/Desktop/qt-logo.jpg"*/;
 
             text: ""
             color: "white"
@@ -59,7 +59,7 @@ P4U_Page {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    if(workloadList.text == "")
+                    if(workloadList.fullObjectName == "")
                         showMessage("Please choose any file or folder!")
                     else
                         pageStack.push({item: "qrc:/ViewWatermark.qml", properties: {watermark: currentWatermark.source, source: workloadList.fullObjectName}})
@@ -70,7 +70,7 @@ P4U_Page {
         Text {
             id: textScaleOfImage
             width: chooseWatermarkButton.width
-            text: "Scale image(s) to %"
+            text: "Scale image(s) to"
             color: "white"
             font.bold: true
             //font.pixelSize: chooseWatermarkButton.fontPixelSize
