@@ -9,91 +9,49 @@ P4U_Page {
 
     Column {
         anchors.fill: parent
-        spacing: 10
+        spacing: 20
         anchors.margins: 10
 
-        Image {
-            id: sourceImage
-            height: parent.height * 0.6
-            fillMode: Image.PreserveAspectFit
-            anchors { horizontalCenter: parent.horizontalCenter; }
-
-            DropArea {
-                anchors.fill: parent
-            }
+        Item {
+            width: parent.width
+            height: parent.height * 0.55
 
             Image {
-                id: watermarkImage
-                x: AppLogic.getWatermarkPosX(parent.width - width)
-                y: AppLogic.getWatermarkPosY(parent.height - height)
-                width: AppLogic.getWatermarkSize(parent.width);
-
-    //            property bool bResizeWatermarkVert : false
-    //            property bool bResizeWatermarkHoriz: false
-    //            property int oldMousePos;
-
+                id: sourceImage
                 fillMode: Image.PreserveAspectFit
-                opacity: AppLogic.getWatermarkOpacity() / 100.0
+                anchors { horizontalCenter: parent.horizontalCenter; }
 
-                Drag.active: watermarkArea.drag.active
-
-                MouseArea {
-                    id: watermarkArea
+                DropArea {
                     anchors.fill: parent
-                    acceptedButtons: Qt.LeftButton
-                    hoverEnabled: true
+                }
 
-                    drag.target: parent
-                    drag.minimumY: 0
-                    drag.maximumY: sourceImage.height - parent.height
-                    drag.minimumX: 0
-                    drag.maximumX: sourceImage.width - parent.width
+                Image {
+                    id: watermarkImage
+                    x: AppLogic.getWatermarkPosX(parent.width - width)
+                    y: AppLogic.getWatermarkPosY(parent.height - height)
+                    width: AppLogic.getWatermarkSize(parent.width);
 
-    //                onPositionChanged: {
-    //                    //console.log("pos: ", mouse.x, " ", mouse.y)
+        //            property bool bResizeWatermarkVert : false
+        //            property bool bResizeWatermarkHoriz: false
+        //            property int oldMousePos;
 
-    //                    // set mouse cursors
-    //                    if(mouse.buttons == 0)
-    //                    {
-    //                        if(mouse.y <= 5 || mouse.y > parent.height - 5) {
-    //                            cursorShape = Qt.SizeVerCursor
-    //                            watermarkImage.bResizeWatermarkVert = true
-    //                            watermarkImage.oldMousePos = mouse.y
-    //                        }
-    //                        else if(mouse.x <= 5 || mouse.x > parent.width - 5) {
-    //                            cursorShape = Qt.SizeHorCursor
-    //                            watermarkImage.bResizeWatermarkHoriz = true
-    //                            watermarkImage.oldMousePos = mouse.x
-    //                        }
-    //                        else {
-    //                            cursorShape = Qt.SizeAllCursor
-    //                            watermarkImage.bResizeWatermarkHoriz = false
-    //                            watermarkImage.bResizeWatermarkVert = false
-    //                        }
-    //                    }
-    //                    else if(pressed && watermarkImage.bResizeWatermarkVert)
-    //                    {
-    //                        var resize = mouse.y - watermarkImage.oldMousePos
+                    fillMode: Image.PreserveAspectFit
+                    opacity: AppLogic.getWatermarkOpacity() / 100.0
 
-    //                        if(resize && mouse.y <= sourceImage.height)
-    //                        {
-    //                            parent.height += mouse.y - watermarkImage.oldMousePos
-    //                            console.log("resize", mouse.y - watermarkImage.oldMousePos)
-    //                            watermarkImage.oldMousePos = mouse.y
-    //                        }
-    //                    }
-    //                    else if(pressed && watermarkImage.bResizeWatermarkHoriz)
-    //                    {
-    //                        var resize = mouse.x - watermarkImage.oldMousePos
+                    Drag.active: watermarkArea.drag.active
 
-    //                        if(resize && mouse.x <= sourceImage.width)
-    //                        {
-    //                            parent.width += mouse.x - watermarkImage.oldMousePos
-    //                            console.log("resize", mouse.x - watermarkImage.oldMousePos)
-    //                            watermarkImage.oldMousePos = mouse.x
-    //                        }
-    //                    }
-    //                }
+                    MouseArea {
+                        id: watermarkArea
+                        anchors.fill: parent
+                        acceptedButtons: Qt.LeftButton
+                        hoverEnabled: true
+
+                        drag.target: parent
+                        drag.minimumY: 0
+                        drag.maximumY: sourceImage.height - parent.height
+                        drag.minimumX: 0
+                        drag.maximumX: sourceImage.width - parent.width
+                    }
                 }
             }
         }
