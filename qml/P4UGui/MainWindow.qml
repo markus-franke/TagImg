@@ -26,7 +26,7 @@ P4U_Page {
         Text {
             id: workloadList
 
-            property string fullObjectName /*: "file:///home/user/Desktop/qt-logo.jpg"*/;
+            property string fullObjectName;
 
             text: ""
             color: "white"
@@ -62,7 +62,7 @@ P4U_Page {
                     if(workloadList.fullObjectName == "")
                         showMessage("Please choose any file or folder!")
                     else
-                        pageStack.push({item: "qrc:/ViewWatermark.qml", properties: {watermark: currentWatermark.source, source: workloadList.fullObjectName}})
+                        pageStack.push({item: "qrc:/ViewWatermark.qml", properties: {watermark: currentWatermark.source, source: AppLogic.getFirstTargetObject()}})
                 }
             }
         }
