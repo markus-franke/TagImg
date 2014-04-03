@@ -29,6 +29,7 @@ public:
     Q_INVOKABLE int getWatermarkOpacity();
     Q_INVOKABLE void setWatermarkOpacity(int opacity);
     Q_INVOKABLE QString cleanPath(QString filePath);
+    Q_INVOKABLE QString getFirstTargetObject();
 
 private:
     QProcess* m_pP4UProcess;

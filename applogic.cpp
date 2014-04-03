@@ -23,6 +23,9 @@
 #define BIN_COMPOSITE   "composite"
 #define BIN_CONVERT     "convert"
 
+// define
+static const QStringList constNameFilters = (QStringList() << "*.JPG" << "*.JPEG" << "*.jpg" << "*.jpeg");
+
 AppLogic::AppLogic(QObject *parent) :
     QObject(parent),
     m_pP4UProcess(NULL),
@@ -187,6 +190,33 @@ QString AppLogic::cleanPath(QString resourcePath)
     return resourcePath;
 }
 
+QString AppLogic::getFirstTargetObject()
+{
+    QString firstImage;
+
+    if(!m_lWorklist.empty())
+    {
+        QString strFirstItem = cleanPath(m_lWorklist.first());
+        QFileInfo firstItem(strFirstItem);
+
+        if(firstItem.isFile())
+        {
+            firstImage = firstItem.absoluteFilePath();
+        }
+        else // we have a directory - simply take the first image
+        {
+            QDir targetDir(firstItem.filePath());
+            QStringList entries = targetDir.entryList(constNameFilters, QDir::Files);
+            if(!entries.empty())
+                firstImage = targetDir.path() + QDir::separator() + entries.first();
+        }
+    }
+
+    qDebug() << firstImage;
+
+    return firstImage;
+}
+
 void AppLogic::applyWatermark()
 {
     qDebug() << "Applying watermark to the following objects:" << m_lWorklist;
@@ -207,7 +237,7 @@ void AppLogic::applyWatermark()
         if(QFileInfo(listItem).isDir()) {
             QDir directory(listItem);
             QStringList nameFilters;
-            nameFilters << "*.JPG" << "*.JPEG" << "*.jpg" << "*.jpeg";
+            nameFilters << constNameFilters;
             QStringList entryList = directory.entryList(nameFilters);
             QString entry;
             foreach(entry, entryList)
