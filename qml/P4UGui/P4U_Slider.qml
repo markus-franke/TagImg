@@ -30,7 +30,7 @@ Item {
             }
         }
 
-        Text {
+        P4U_Label {
             id: valueText
             Layout.minimumWidth: 40
             text: {
@@ -40,8 +40,6 @@ Item {
                 val = val + '%'
                 return val
             }
-            color: "white"
-            font.bold: true
             font.pixelSize: rootItem.fontPixelSize
         }
     }

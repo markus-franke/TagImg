@@ -23,15 +23,13 @@ P4U_Page {
             onClicked: pageStack.push(chooseFileFolderBrowser)
         }
 
-        Text {
+        P4U_Label {
             id: workloadList
 
             property string fullObjectName;
 
+            font.pixelSize: chooseWatermarkButton.fontPixelSize
             text: ""
-            color: "white"
-            font { bold: true; pointSize: 12 }
-            wrapMode: Text.Wrap
             width: buttonGrid.width / buttonGrid.columns - buttonGrid.spacing
             height: chooseFileFolderButton.height
             verticalAlignment: Text.AlignVCenter
@@ -67,12 +65,10 @@ P4U_Page {
             }
         }
 
-        Text {
+        P4U_Label {
             id: textScaleOfImage
             width: chooseWatermarkButton.width
             text: "Scale image(s) to"
-            color: "white"
-            font.bold: true
             font.pixelSize: chooseWatermarkButton.fontPixelSize
         }
 
@@ -80,6 +76,7 @@ P4U_Page {
             id: sliderScaleOfImage
             width: workloadList.width
             height: textScaleOfImage.height
+            fontPixelSize: chooseWatermarkButton.fontPixelSize
 
             onValueChanged: AppLogic.setImageScale(value)
         }

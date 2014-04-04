@@ -20,13 +20,12 @@ Rectangle {
         anchors.margins: 10
         spacing: 10
 
-        Text {
+        P4U_Label {
             id: messageText
-            font { bold: true; pixelSize: height / 4 }
+            font { pixelSize: height / 4 }
             color: "black"
             Layout.fillWidth: true
             Layout.fillHeight: true
-            wrapMode: Text.Wrap
         }
 
         P4U_Button {
