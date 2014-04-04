@@ -1,32 +1,42 @@
-import QtQuick 2.0
+import QtQuick 2.2
+import QtQuick.Layouts 1.1
 
 Rectangle {
     id: messageBox
 
     property alias message: messageText.text
 
-    width: 0
-    height: 0
     anchors.centerIn: parent
     color: "lightblue"
     radius: 5
     border.width: 2
     visible: false
+    width: parent.width * 0.75
+    height: parent.height * 0.5
 
-    Text {
-        id: messageText
-        font { bold: true; pixelSize: 15 }
-        color: "black"
-        width: parent.width
-        anchors { top: parent.top; left: parent.left; margins: 5 }
-        wrapMode: Text.Wrap
-    }
+    ColumnLayout {
 
-    P4U_Button {
-        id: okButton
-        text: "Ok"
-        onClicked: closeAnimation.start()
-        anchors { bottom: parent.bottom; bottomMargin: 10; horizontalCenter: parent.horizontalCenter }
+        anchors.fill: parent
+        anchors.margins: 10
+        spacing: 10
+
+        Text {
+            id: messageText
+            font { bold: true; pixelSize: height / 4 }
+            color: "black"
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            wrapMode: Text.Wrap
+        }
+
+        P4U_Button {
+            id: okButton
+            text: "Ok"
+            anchors.horizontalCenter: parent.horizontalCenter
+            Layout.preferredWidth: width
+            Layout.preferredHeight: height
+            onClicked: closeAnimation.start()
+        }
     }
 
     ParallelAnimation {
