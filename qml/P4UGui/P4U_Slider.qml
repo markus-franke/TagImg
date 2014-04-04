@@ -4,7 +4,9 @@ import QtQuick.Controls.Styles 1.1
 import QtQuick.Layouts 1.1
 
 Item {
+    id: rootItem
     property alias value : sliderComponent.value
+    property int fontPixelSize
 
     RowLayout {
         spacing: 10
@@ -40,6 +42,7 @@ Item {
             }
             color: "white"
             font.bold: true
+            font.pixelSize: rootItem.fontPixelSize
         }
     }
 }

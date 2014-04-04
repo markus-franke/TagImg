@@ -73,7 +73,7 @@ P4U_Page {
             text: "Scale image(s) to"
             color: "white"
             font.bold: true
-            //font.pixelSize: chooseWatermarkButton.fontPixelSize
+            font.pixelSize: chooseWatermarkButton.fontPixelSize
         }
 
         P4U_Slider {
