@@ -7,19 +7,18 @@ P4U_Page {
     property alias watermark: watermarkImage.source
     property alias source: sourceImage.source
 
-    Column {
-        anchors.fill: parent
+    ColumnLayout {
         spacing: 20
-        anchors.margins: 10
+        anchors { margins: 10; left: parent.left; right: parent.right }
 
         Item {
-            width: parent.width
-            height: parent.height * 0.55
+            Layout.fillWidth: true
+            //height: 100
 
             Image {
                 id: sourceImage
                 fillMode: Image.PreserveAspectFit
-                anchors { horizontalCenter: parent.horizontalCenter; }
+                anchors { horizontalCenter: parent.horizontalCenter; fill: parent }
 
                 DropArea {
                     anchors.fill: parent
@@ -61,32 +60,32 @@ P4U_Page {
             columns: 2
             width: parent.width
 
-            Text {
+            P4U_Label {
                 text: "Opacity"
-                color: "white"
-                font.bold: true
+                font.pixelSize: okButton.fontPixelSize
             }
 
             P4U_Slider {
                 id: sliderOpacity
                 Layout.fillWidth: true
                 value: AppLogic.getWatermarkOpacity();
+                fontPixelSize: okButton.fontPixelSize
                 onValueChanged: {
                     AppLogic.setWatermarkOpacity(value)
                     watermarkImage.opacity=AppLogic.getWatermarkOpacity() / 100;
                 }
             }
 
-            Text {
+            P4U_Label {
                 text: "Scale"
-                color: "white"
-                font.bold: true
+                font.pixelSize: okButton.fontPixelSize
             }
 
             P4U_Slider {
                 id: sliderScale
                 Layout.fillWidth: true
                 value: AppLogic.getWatermarkSizePct();
+                fontPixelSize: okButton.fontPixelSize
                 onValueChanged: {
                     AppLogic.setWatermarkSize(value, value)
                     if(sourceImage.paintedWidth != 0)
@@ -97,6 +96,8 @@ P4U_Page {
 
         P4U_Button {
             id: okButton
+            Layout.preferredWidth: width
+            Layout.preferredHeight: height
             text: "Ok"
             onClicked: {
                 //console.log("x: ", watermarkImage.x, ", y: ", watermarkImage.y)
