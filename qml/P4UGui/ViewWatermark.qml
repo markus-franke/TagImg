@@ -152,6 +152,8 @@ P4U_Page {
         }
     }
 
+    Component.onCompleted: console.log('source image is: ', sourceImage.source)
+
     function watermarkSizeChanged(scaleXPct, scaleYPct) {
 
     }
