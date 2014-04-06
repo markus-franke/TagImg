@@ -152,6 +152,11 @@ void AppLogic::setWatermarkOpacity(int opacity)
     }
 }
 
+QString AppLogic::toNativeSeparators(QString path)
+{
+    return QDir::toNativeSeparators(path);
+}
+
 int AppLogic::checkForExecutable(QString executable) const
 {
 #ifdef Q_OS_WIN
@@ -164,7 +169,7 @@ int AppLogic::checkForExecutable(QString executable) const
 int AppLogic::checkForImageMagick() const
 {
     // check for mogrify
-    if(checkForExecutable(BIN_MOGRIFY))
+    if(checkForExecutable(BIN_CONVERT))
         return -1;
 
     // check for composite
@@ -178,14 +183,22 @@ int AppLogic::checkForImageMagick() const
 
 QString AppLogic::fixPath(QString filePath)
 {
+#ifdef Q_OS_WIN
+    filePath.prepend("file:///");
+#else
     filePath.prepend("file://");
+#endif
     filePath = QDir::cleanPath(filePath);
     return filePath;
 }
 
 QString AppLogic::cleanPath(QString resourcePath)
 {
+#ifdef Q_OS_WIN
+    resourcePath.remove("file:///");
+#else
     resourcePath.remove("file://");
+#endif
     resourcePath = QDir::cleanPath(resourcePath);
     return resourcePath;
 }
@@ -234,6 +247,8 @@ void AppLogic::applyWatermark()
 #else
         listItem.remove("file://");
 #endif
+        listItem = QDir::toNativeSeparators(listItem);
+
         if(QFileInfo(listItem).isDir()) {
             QDir directory(listItem);
             QStringList nameFilters;
@@ -274,7 +289,7 @@ void AppLogic::applyWatermark()
         // generate watermark
         QImage watermarkImg(cleanPath(m_strWatermark));
         QImage currentFileImg(outFile);
-        QString tmpWatermark("watermark_tmp.jpg");
+        QString tmpWatermark("watermark_tmp.png");
 
 //        qDebug() << "Dimensions of watermarkImg: " << watermarkImg.width() << " x " << watermarkImg.height();
 //        qDebug() << "Dimensions of currentFileImg: " << currentFileImg.width() << " x " << currentFileImg.height();
