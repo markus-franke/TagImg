@@ -60,7 +60,7 @@ P4U_Page {
                     if(workloadList.fullObjectName == "")
                         showMessage("Please choose any file or folder!")
                     else
-                        pageStack.push({item: "qrc:/ViewWatermark.qml", properties: {watermark: currentWatermark.source, source: AppLogic.getFirstTargetObject()}})
+                        pageStack.push({item: "qrc:/ViewWatermark.qml", properties: {watermark: currentWatermark.source, source: AppLogic.fixPath(AppLogic.getFirstTargetObject())}})
                 }
             }
         }
