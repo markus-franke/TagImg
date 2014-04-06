@@ -47,6 +47,9 @@ int main(int argc, char *argv[])
     // check dependencies
     appLogic.checkDeps();
 
+    //appLogic.setWorklist("file:///home/user/Desktop/qt-logo.jpg");
+    //appLogic.setWorklist("file:///home/user/Desktop/pics");
+
     int ret = app.exec();
 
     appLogicThread.exit();

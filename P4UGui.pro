@@ -22,7 +22,8 @@ OTHER_FILES += \
     qml/P4UGui/P4U_Message.qml \
     qml/P4UGui/P4U_ProgressBar.qml \
     qml/P4UGui/ViewWatermark.qml \
-    qml/P4UGui/MainWindow.qml
+    qml/P4UGui/MainWindow.qml \
+    qml/P4UGui/P4U_Label.qml
 
 HEADERS += \
     applogic.h \

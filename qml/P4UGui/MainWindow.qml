@@ -23,15 +23,13 @@ P4U_Page {
             onClicked: pageStack.push(chooseFileFolderBrowser)
         }
 
-        Text {
+        P4U_Label {
             id: workloadList
 
-            property string fullObjectName : /*"file:///home/user/Desktop/india_orig.jpg"*/;
+            property string fullObjectName;
 
+            font.pixelSize: chooseWatermarkButton.fontPixelSize
             text: ""
-            color: "white"
-            font { bold: true; pointSize: 12 }
-            wrapMode: Text.Wrap
             width: buttonGrid.width / buttonGrid.columns - buttonGrid.spacing
             height: chooseFileFolderButton.height
             verticalAlignment: Text.AlignVCenter
@@ -59,27 +57,26 @@ P4U_Page {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    if(workloadList.text == "")
+                    if(workloadList.fullObjectName == "")
                         showMessage("Please choose any file or folder!")
                     else
-                        pageStack.push({item: "qrc:/ViewWatermark.qml", properties: {watermark: currentWatermark.source, source: workloadList.fullObjectName}})
+                        pageStack.push({item: "qrc:/ViewWatermark.qml", properties: {watermark: currentWatermark.source, source: AppLogic.getFirstTargetObject()}})
                 }
             }
         }
 
-        Text {
+        P4U_Label {
             id: textScaleOfImage
             width: chooseWatermarkButton.width
-            text: "Scale image(s) to %"
-            color: "white"
-            font.bold: true
-            //font.pixelSize: chooseWatermarkButton.fontPixelSize
+            text: "Scale image(s) to"
+            font.pixelSize: chooseWatermarkButton.fontPixelSize
         }
 
         P4U_Slider {
             id: sliderScaleOfImage
             width: workloadList.width
             height: textScaleOfImage.height
+            fontPixelSize: chooseWatermarkButton.fontPixelSize
 
             onValueChanged: AppLogic.setImageScale(value)
         }

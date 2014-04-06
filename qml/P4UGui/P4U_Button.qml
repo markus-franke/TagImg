@@ -8,6 +8,8 @@ Button {
     height: 60
     antialiasing: true
 
+    property int fontPixelSize : height / 4
+
     scale : hovered ? 1.1 : 1.0
     Behavior on scale { NumberAnimation { easing.type: Easing.OutCubic ; duration: 120} }
 
@@ -24,7 +26,7 @@ Button {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             color: enabled ? "white" : "gray"
-            font.pixelSize: 15
+            font.pixelSize: fontPixelSize
             font.bold: true
             wrapMode: Text.WordWrap
             text: button.text
