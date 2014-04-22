@@ -7,33 +7,47 @@ P4U_Page {
     property alias watermark: watermarkImage.source
     property alias source: sourceImage.source
 
+//    Image {
+//        id: sourceImage
+//        fillMode: Image.PreserveAspectFit
+//        width: 370
+//        height: 330
+//        //anchors.fill: parent
+//        //anchors {left: parent.left; right: parent.right }
+//        //width: parent.width;
+//        //height: parent.height;
+//    }
+
+//    Component.onCompleted: {
+//        console.log('width: ', sourceImage.width, '; paintedWidth: ', sourceImage.paintedWidth)
+//        console.log('height: ', sourceImage.height, '; paintedHeight: ', sourceImage.paintedHeight)
+//        console.log('parent width: ', parent.width, '; parent height: ', parent.height)
+//        console.log('source image is: ', sourceImage.source)
+//    }
+
     ColumnLayout {
+        id: layout
         spacing: 20
-        anchors { margins: 10; left: parent.left; right: parent.right }
+        anchors { margins: 10; fill: parent }
 
         Item {
+            id: container
             Layout.fillWidth: true
-            //height: 100
+            Layout.fillHeight: true
 
             Image {
                 id: sourceImage
                 fillMode: Image.PreserveAspectFit
-                anchors { horizontalCenter: parent.horizontalCenter; fill: parent }
-
-                DropArea {
-                    anchors.fill: parent
-                }
+                //anchors.fill: parent
+                anchors {left: parent.left; right: parent.right }
+//                width: 370 * 0.7;
+//                height: 330 * 0.7;
 
                 Image {
                     id: watermarkImage
                     x: AppLogic.getWatermarkPosX(parent.width - width)
                     y: AppLogic.getWatermarkPosY(parent.height - height)
                     width: AppLogic.getWatermarkSize(parent.width);
-
-        //            property bool bResizeWatermarkVert : false
-        //            property bool bResizeWatermarkHoriz: false
-        //            property int oldMousePos;
-
                     fillMode: Image.PreserveAspectFit
                     opacity: AppLogic.getWatermarkOpacity() / 100.0
 
@@ -47,11 +61,13 @@ P4U_Page {
 
                         drag.target: parent
                         drag.minimumY: 0
-                        drag.maximumY: sourceImage.height - parent.height
+                        drag.maximumY: sourceImage.paintedHeight - parent.paintedHeight
                         drag.minimumX: 0
-                        drag.maximumX: sourceImage.width - parent.width
+                        drag.maximumX: sourceImage.paintedWidth - parent.paintedWidth
                     }
                 }
+
+
             }
         }
 
@@ -111,9 +127,10 @@ P4U_Page {
         }
     }
 
-    Component.onCompleted: console.log('source image is: ', sourceImage.source)
-
-    function watermarkSizeChanged(scaleXPct, scaleYPct) {
-
+    Component.onCompleted: {
+        console.log('container width: ', container.width, '; container height: ', container.height)
+        console.log('width: ', sourceImage.width, '; paintedWidth: ', sourceImage.paintedWidth)
+        console.log('height: ', sourceImage.height, '; paintedHeight: ', sourceImage.paintedHeight)
+        console.log('source image is: ', sourceImage.source)
     }
 }
