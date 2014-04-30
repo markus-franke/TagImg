@@ -7,24 +7,6 @@ P4U_Page {
     property alias watermark: watermarkImage.source
     property alias source: sourceImage.source
 
-//    Image {
-//        id: sourceImage
-//        fillMode: Image.PreserveAspectFit
-//        width: 370
-//        height: 330
-//        //anchors.fill: parent
-//        //anchors {left: parent.left; right: parent.right }
-//        //width: parent.width;
-//        //height: parent.height;
-//    }
-
-//    Component.onCompleted: {
-//        console.log('width: ', sourceImage.width, '; paintedWidth: ', sourceImage.paintedWidth)
-//        console.log('height: ', sourceImage.height, '; paintedHeight: ', sourceImage.paintedHeight)
-//        console.log('parent width: ', parent.width, '; parent height: ', parent.height)
-//        console.log('source image is: ', sourceImage.source)
-//    }
-
     ColumnLayout {
         id: layout
         spacing: 20
@@ -38,11 +20,16 @@ P4U_Page {
             Image {
                 id: sourceImage
                 fillMode: Image.PreserveAspectFit
-                //anchors.fill: parent
-                anchors {left: parent.left; right: parent.right }
-//                width: 370 * 0.7;
-//                height: 330 * 0.7;
+                anchors { horizontalCenter: parent.horizontalCenter }
+                width: {
+                    if(sourceImage.sourceSize.width > sourceImage.sourceSize.height)
+                        return parent.width
+                }
+                height: {
+                    if(sourceImage.sourceSize.width <= sourceImage.sourceSize.height)
+                        return parent.height
 
+                }
                 Image {
                     id: watermarkImage
                     x: AppLogic.getWatermarkPosX(parent.width - width)
@@ -66,8 +53,6 @@ P4U_Page {
                         drag.maximumX: sourceImage.paintedWidth - parent.paintedWidth
                     }
                 }
-
-
             }
         }
 
@@ -101,8 +86,12 @@ P4U_Page {
                 id: sliderScale
                 Layout.fillWidth: true
                 value: AppLogic.getWatermarkSizePct();
+                //maximumValue: Math.min(sourceImage.sourceSize.width * 100 / watermarkImage.sourceSize.width, sourceImage.sourceSize.height * 100 / watermarkImage.sourceSize.height)
                 fontPixelSize: okButton.fontPixelSize
+
                 onValueChanged: {
+//                    console.log(sourceImage.sourceSize.width * 100 / watermarkImage.sourceSize.width)
+//                    console.log(sourceImage.sourceSize.height * 100 / watermarkImage.sourceSize.height)
                     AppLogic.setWatermarkSize(value, value)
                     if(sourceImage.paintedWidth != 0)
                         watermarkImage.width=AppLogic.getWatermarkSize(sourceImage.paintedWidth);
@@ -115,7 +104,7 @@ P4U_Page {
             Layout.preferredWidth: width
             Layout.preferredHeight: height
             text: "Ok"
-            onClicked: {
+            onClicked: {parent
                 //console.log("x: ", watermarkImage.x, ", y: ", watermarkImage.y)
                 var setX = Math.round(watermarkImage.x * 100 / (sourceImage.width - watermarkImage.width))
                 var setY = Math.round(watermarkImage.y * 100 / (sourceImage.height - watermarkImage.height))
@@ -127,10 +116,4 @@ P4U_Page {
         }
     }
 
-    Component.onCompleted: {
-        console.log('container width: ', container.width, '; container height: ', container.height)
-        console.log('width: ', sourceImage.width, '; paintedWidth: ', sourceImage.paintedWidth)
-        console.log('height: ', sourceImage.height, '; paintedHeight: ', sourceImage.paintedHeight)
-        console.log('source image is: ', sourceImage.source)
-    }
 }
