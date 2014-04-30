@@ -48,3 +48,8 @@ int WMGeometry::getWidth(int imageWidth) const
     return qRound(m_SizePct.first * imageWidth / 100.0);
 }
 
+int WMGeometry::getHeight(int imageHeight) const
+{
+    return qRound(m_SizePct.second * imageHeight / 100.0);
+}
+

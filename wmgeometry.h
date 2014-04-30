@@ -17,6 +17,7 @@ public:
 
     const QPair<int,int>& getSizePct() const;
     int getWidth(int imageWidth) const;
+    int getHeight(int imageHeight) const;
 
 private:
     QPair<int,int> m_SizePct;
