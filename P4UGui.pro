@@ -8,7 +8,7 @@ QML_IMPORT_PATH =
 
 QT -= network
 
-QMAKE_LFLAGS += "-static"
+#QMAKE_LFLAGS += "-static"
 
 # add Image Magick libraries
 LIBS += -L$$PWD/utils/build/Magick++/lib/.libs -lMagick++-6.Q16
