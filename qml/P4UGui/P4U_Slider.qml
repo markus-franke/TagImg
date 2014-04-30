@@ -6,6 +6,7 @@ import QtQuick.Layouts 1.1
 Item {
     id: rootItem
     property alias value : sliderComponent.value
+    property alias maximumValue: sliderComponent.maximumValue
     property int fontPixelSize
 
     RowLayout {
