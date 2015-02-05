@@ -30,7 +30,8 @@ AppLogic::AppLogic(QObject *parent) :
     QObject(parent),
     m_pP4UProcess(NULL),
     m_pDefaultSettings(NULL),
-    m_iImageScalePct(0)
+    m_iImageScalePct(0),
+    m_iWatermarkOpacity(0)
 {
     m_pP4UProcess = new QProcess(this);
 
