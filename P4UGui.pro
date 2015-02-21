@@ -5,10 +5,16 @@ QT -= network
 
 QT += qml quick
 
+CONFIG *= c++11
+
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
     applogic.cpp \
-    wmgeometry.cpp
+    wmgeometry.cpp \
+    qexifimageheader/qexifimageheader.cpp \
+    qtquick2applicationviewer/qtquick2applicationviewer.cpp \
+    settings.cpp \
+    datamodel.cpp
 
 RESOURCES += \
     qml/P4UGui/resources.qrc
@@ -27,4 +33,8 @@ OTHER_FILES += \
 
 HEADERS += \
     applogic.h \
-    wmgeometry.h
+    wmgeometry.h \
+    qtquick2applicationviewer/qtquick2applicationviewer.h \
+    qexifimageheader/qexifimageheader.h \
+    settings.h \
+    datamodel.h

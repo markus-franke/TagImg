@@ -37,15 +37,12 @@ ApplicationWindow {
                 }
             }
         }
-
-        onApplyWatermark: rootWindow.applyWatermark()
     }
 
     onWatermarkChanged: mainWindow.watermarkChanged(watermark)
     onTargetObjectChanged: mainWindow.targetObjectChanged(name)
     onImageScaleChanged: mainWindow.imageScaleChanged(percent)
     onSetProgressValue: mainWindow.setProgressValue(value)
-
 
     onDependencyError: {
         showMessage("Unable to find one or more dependencies (" + dependencies + ") of P4UGui. They are either not installed or not in the PATH.")
@@ -73,9 +70,6 @@ ApplicationWindow {
             mBox.visible = true
         }
     }
-
-    // outgoing
-    signal applyWatermark()
 
     // incoming
     signal watermarkDone(int exitCode)

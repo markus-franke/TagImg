@@ -9,81 +9,20 @@
 #include <QUrl>
 #include <QImage>
 #include <QFile>
+#include <QPainter>
+#include <QTimer>
 
-// define some keys for the default settings
-#define KEY_SCALE_PCT           "scale_pct"
-#define KEY_WATERMARK           "watermark"
-#define KEY_WATERMARK_POSX      "watermark_posx"
-#define KEY_WATERMARK_POSY      "watermark_posy"
-#define KEY_WATERMARK_SCALE     "watermark_scale"
-#define KEY_WATERMARK_OPACITY   "watermark_opacity"
+#include "qexifimageheader/qexifimageheader.h"
 
-// define some ImageMagick binaries
-#define BIN_MOGRIFY     "mogrify"
-#define BIN_COMPOSITE   "composite"
-#define BIN_CONVERT     "convert"
-
-// define
+// define the filetypes being handled
 static const QStringList constNameFilters = (QStringList() << "*.JPG" << "*.JPEG" << "*.jpg" << "*.jpeg");
 
 AppLogic::AppLogic(QObject *parent) :
     QObject(parent),
-    m_pP4UProcess(NULL),
-    m_pDefaultSettings(NULL),
-    m_iImageScalePct(0),
-    m_iWatermarkOpacity(0)
+    m_DM(DataModel::instance())
 {
-    m_pP4UProcess = new QProcess(this);
-
-    m_pDefaultSettings = new QSettings("Private", "P4UGUI", this);
-}
-
-AppLogic::~AppLogic()
-{
-    writeDefaultSettings();
-
-    delete m_pDefaultSettings;
-    delete m_pP4UProcess;
-}
-
-void AppLogic::readDefaultSettings()
-{
-    qDebug() << "read def settings";
-
-    setWatermark(m_pDefaultSettings->value(KEY_WATERMARK, "").toString());
-    setImageScale(m_pDefaultSettings->value(KEY_SCALE_PCT, 50).toInt());
-    setWatermarkPos(m_pDefaultSettings->value(KEY_WATERMARK_POSX, 0).toInt(), m_pDefaultSettings->value(KEY_WATERMARK_POSY, 0).toInt());
-    setWatermarkSize(m_pDefaultSettings->value(KEY_WATERMARK_SCALE, 50).toInt(), m_pDefaultSettings->value(KEY_WATERMARK_SCALE, 50).toInt());
-    setWatermarkOpacity(m_pDefaultSettings->value(KEY_WATERMARK_OPACITY, 50).toInt());
-}
-
-void AppLogic::writeDefaultSettings() const
-{
-    qDebug() << "write def settings";
-
-    m_pDefaultSettings->setValue(KEY_WATERMARK, m_strWatermark);
-    m_pDefaultSettings->setValue(KEY_SCALE_PCT, m_iImageScalePct);
-    m_pDefaultSettings->setValue(KEY_WATERMARK_POSX, m_WMGeometry.getPosPct().first);
-    m_pDefaultSettings->setValue(KEY_WATERMARK_POSY, m_WMGeometry.getPosPct().second);
-    m_pDefaultSettings->setValue(KEY_WATERMARK_SCALE, m_WMGeometry.getSizePct().first);
-    m_pDefaultSettings->setValue(KEY_WATERMARK_OPACITY, m_iWatermarkOpacity);
-}
-
-void AppLogic::checkDeps()
-{
-    QString dependencies;
-    bool error = false;
-
-    // check for ImageMagick
-    if(checkForImageMagick())
-    {
-        qDebug("Unable to find ImageMagick!");
-        dependencies += "ImageMagick:";
-        error = true;
-    }
-
-    if(error)
-        emit dependencyError(dependencies);
+    // force reading of default settings once the main loop starts running
+    QTimer::singleShot(0, &m_Settings, SLOT(readDefaultSettings()));
 }
 
 QString AppLogic::getDefaultDir()
@@ -109,77 +48,9 @@ QString AppLogic::getPathPrefix()
 #endif
 }
 
-void AppLogic::setWatermarkPos(int posXPct, int posYPct)
-{
-    m_WMGeometry.setPosPct(posXPct, posYPct);
-}
-
-int AppLogic::getWatermarkPosX(int imageWidth)
-{
-    return m_WMGeometry.getPosX(imageWidth);
-}
-
-int AppLogic::getWatermarkPosY(int imageHeight)
-{
-    return m_WMGeometry.getPosY(imageHeight);
-}
-
-void AppLogic::setWatermarkSize(int scaleXPct, int scaleYPct)
-{
-    m_WMGeometry.setSizePct(scaleXPct, scaleYPct);
-}
-
-int AppLogic::getWatermarkSize(int imageWidth)
-{
-    return m_WMGeometry.getWidth(imageWidth);
-}
-
-int AppLogic::getWatermarkSizePct()
-{
-    return m_WMGeometry.getSizePct().first;
-}
-
-int AppLogic::getWatermarkOpacity()
-{
-    return m_iWatermarkOpacity;
-}
-
-void AppLogic::setWatermarkOpacity(int opacity)
-{
-    if(m_iWatermarkOpacity != opacity)
-    {
-        m_iWatermarkOpacity = opacity;
-        emit watermarkOpacityChanged(m_iWatermarkOpacity);
-    }
-}
-
 QString AppLogic::toNativeSeparators(QString path)
 {
     return QDir::toNativeSeparators(path);
-}
-
-int AppLogic::checkForExecutable(QString executable) const
-{
-#ifdef Q_OS_WIN
-    return m_pP4UProcess->execute(QString("%1").arg(executable));
-#else
-    return m_pP4UProcess->execute(QString("which %1").arg(executable));
-#endif
-}
-
-int AppLogic::checkForImageMagick() const
-{
-    // check for mogrify
-    if(checkForExecutable(BIN_CONVERT))
-        return -1;
-
-    // check for composite
-    if(checkForExecutable(BIN_COMPOSITE))
-        return -1;
-
-    qDebug("ImageMagick is present!");
-
-    return 0;
 }
 
 QString AppLogic::fixPath(QString filePath)
@@ -204,36 +75,9 @@ QString AppLogic::cleanPath(QString resourcePath)
     return resourcePath;
 }
 
-QString AppLogic::getFirstTargetObject()
-{
-    QString firstImage;
-
-    if(!m_lWorklist.empty())
-    {
-        QString strFirstItem = cleanPath(m_lWorklist.first());
-        QFileInfo firstItem(strFirstItem);
-
-        if(firstItem.isFile())
-        {
-            firstImage = firstItem.absoluteFilePath();
-        }
-        else // we have a directory - simply take the first image
-        {
-            QDir targetDir(firstItem.filePath());
-            QStringList entries = targetDir.entryList(constNameFilters, QDir::Files);
-            if(!entries.empty())
-                firstImage = targetDir.path() + QDir::separator() + entries.first();
-        }
-    }
-
-    qDebug() << firstImage;
-
-    return firstImage;
-}
-
 void AppLogic::applyWatermark()
 {
-    qDebug() << "Applying watermark to the following objects:" << m_lWorklist;
+    qDebug() << "Applying watermark to the following objects:" << m_DM.getWorklist();
 
     // reset progress bar
     emit setProgressValue(0);
@@ -242,7 +86,7 @@ void AppLogic::applyWatermark()
     bool bError = false;
     QString listItem;
 
-    foreach(listItem, m_lWorklist) {
+    foreach(listItem, m_DM.getWorklist()) {
 #ifdef Q_OS_WIN
         listItem.remove("file:///");
 #else
@@ -267,7 +111,6 @@ void AppLogic::applyWatermark()
     }
 
     QString currentFile;
-    int processTimeoutMs = 10000;
     for(int i = 0; i < fileList.length() && !bError; ++i)
     {
         bError = true;
@@ -282,13 +125,25 @@ void AppLogic::applyWatermark()
         QDir::root().mkdir(outFileDir);
 
         // rotate'n'resize
-        // qDebug() << QString("%1 -auto-orient -resize %2% \"%3\" %4").arg(BIN_CONVERT).arg(m_iImageScalePct).arg(currentFile).arg(outFile);
-        m_pP4UProcess->start(QString("%1 -auto-orient -resize %2% \"%3\" \"%4\"").arg(BIN_CONVERT).arg(m_iImageScalePct).arg(currentFile).arg(outFile));
-        if(!m_pP4UProcess->waitForFinished(processTimeoutMs) || m_pP4UProcess->exitCode() != 0)
-            break;
+        QExifImageHeader exifHeader(currentFile);
+        quint32 orientation = exifHeader.value(QExifImageHeader::Orientation).toLong();
+        qDebug() << "Orientation is" << orientation;
+
+        QImage currentImg(currentFile);
+        currentImg = currentImg.scaledToHeight(currentImg.height() * m_DM.getImageScale() / 100);
+
+        if(orientation == 8)
+        {
+            qDebug() << "Rotating Image";
+            QTransform rotateTransform;
+            rotateTransform = rotateTransform.rotate(270);
+            currentImg = currentImg.transformed(rotateTransform);
+        }
+
+        currentImg.save(outFile);
 
         // generate watermark
-        QImage watermarkImg(cleanPath(m_strWatermark));
+        QImage watermarkImg(cleanPath(m_DM.getWatermark()));
         QImage currentFileImg(outFile);
         QString tmpWatermark("watermark_tmp.png");
 
@@ -297,22 +152,22 @@ void AppLogic::applyWatermark()
 
         // resize watermark according to image size
         if(currentFileImg.width() > currentFileImg.height())
-            watermarkImg = watermarkImg.scaledToWidth(m_WMGeometry.getSizePct().first / 100.0 * currentFileImg.width());
+            watermarkImg = watermarkImg.scaledToWidth(m_DM.getWatermarkSizePct() / 100.0 * currentFileImg.width());
         else
-            watermarkImg = watermarkImg.scaledToWidth(m_WMGeometry.getSizePct().first / 100.0 * currentFileImg.height());
+            watermarkImg = watermarkImg.scaledToWidth(m_DM.getWatermarkSizePct() / 100.0 * currentFileImg.height());
         watermarkImg.save(tmpWatermark);
 
 //        qDebug() << "Dimensions of watermarkImg after resize: " << watermarkImg.width() << " x " << watermarkImg.height();
 
         // apply watermark
-        int offsetX = m_WMGeometry.getPosX(currentFileImg.width() - watermarkImg.width());
-        int offsetY = m_WMGeometry.getPosY(currentFileImg.height() - watermarkImg.height());
+        int offsetX = m_DM.getWatermarkPosX(currentFileImg.width() - watermarkImg.width());
+        int offsetY = m_DM.getWatermarkPosY(currentFileImg.height() - watermarkImg.height());
 
 //        qDebug() << "Offset of watermark is: " << offsetX << ", " << offsetY;
-
-        m_pP4UProcess->start(QString("%1 -dissolve %2 -gravity northwest -geometry +%3+%4 %5 \"%6\" \"%7\"").arg(BIN_COMPOSITE).arg(m_iWatermarkOpacity).arg(offsetX).arg(offsetY).arg(tmpWatermark).arg(outFile).arg(outFile));
-        if(!m_pP4UProcess->waitForFinished(processTimeoutMs) || m_pP4UProcess->exitCode() != 0)
-            break;
+        QPainter p(&currentFileImg);
+        p.setOpacity(m_DM.getWatermarkOpacity() / 100.0);
+        p.drawImage(offsetX,offsetY,watermarkImg);
+        currentFileImg.save(outFile);
 
         // remove temporary file again
         QFile(tmpWatermark).remove();
@@ -331,14 +186,31 @@ void AppLogic::applyWatermark()
     emit watermarkDone(bError);
 }
 
-void AppLogic::setTargetObject(const QString &targetObject)
+QString AppLogic::getFirstTargetObject()
 {
-    if(m_strTargetObject == targetObject) return;
+    QString firstImage;
 
-    m_strTargetObject = targetObject;
-    emit targetObjectChanged(m_strTargetObject);
+    if(!m_DM.getWorklist().empty())
+    {
+        QString strFirstItem = cleanPath(m_DM.getWorklist().first());
+        QFileInfo firstItem(strFirstItem);
 
-    // qDebug() << m_strTargetObject;
+        if(firstItem.isFile())
+        {
+            firstImage = firstItem.absoluteFilePath();
+        }
+        else // we have a directory - simply take the first image
+        {
+            QDir targetDir(firstItem.filePath());
+            QStringList entries = targetDir.entryList(constNameFilters, QDir::Files);
+            if(!entries.empty())
+                firstImage = targetDir.path() + QDir::separator() + entries.first();
+        }
+    }
+
+    qDebug() << firstImage;
+
+    return firstImage;
 }
 
 void AppLogic::setWorklist(const QVariant& worklist)
@@ -367,37 +239,5 @@ void AppLogic::setWorklist(const QVariant& worklist)
         stringList.append(worklist.toString());
     }
 
-    if(stringList == m_lWorklist)
-        return;
-
-    m_lWorklist = stringList;
-    QString targetObject = "";
-    if(!m_lWorklist.empty()) {
-        //if(m_lWorklist.count() == 1)
-            targetObject = m_lWorklist.first();
-        /*else
-            targetObject = "Multiple files";*/
-    }
-
-    emit targetObjectChanged(targetObject);
-
-    qDebug() << "Worklist: " << m_lWorklist;
-}
-
-void AppLogic::setWatermark(const QString &watermark)
-{
-    if(m_strWatermark == watermark) return;
-
-    m_strWatermark = watermark;
-    emit watermarkChanged(m_strWatermark);
-}
-
-void AppLogic::setImageScale(int percent)
-{
-    if(m_iImageScalePct == percent) return;
-    if(percent < 1 || percent > 100) return;
-
-    m_iImageScalePct = percent;
-
-    emit imageScaleChanged(m_iImageScalePct);
+    m_DM.setWorklist(stringList);
 }

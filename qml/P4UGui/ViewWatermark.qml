@@ -32,11 +32,11 @@ P4U_Page {
                 }
                 Image {
                     id: watermarkImage
-                    x: AppLogic.getWatermarkPosX(parent.width - width)
-                    y: AppLogic.getWatermarkPosY(parent.height - height)
-                    width: AppLogic.getWatermarkSize(parent.width);
+                    x: DataModel.getWatermarkPosX(parent.width - width)
+                    y: DataModel.getWatermarkPosY(parent.height - height)
+                    width: DataModel.getWatermarkSize(parent.width);
                     fillMode: Image.PreserveAspectFit
-                    opacity: AppLogic.getWatermarkOpacity() / 100.0
+                    opacity: DataModel.getWatermarkOpacity() / 100.0
 
                     Drag.active: watermarkArea.drag.active
 
@@ -69,11 +69,11 @@ P4U_Page {
             P4U_Slider {
                 id: sliderOpacity
                 Layout.fillWidth: true
-                value: AppLogic.getWatermarkOpacity();
+                value: DataModel.getWatermarkOpacity();
                 fontPixelSize: okButton.fontPixelSize
                 onValueChanged: {
-                    AppLogic.setWatermarkOpacity(value)
-                    watermarkImage.opacity=AppLogic.getWatermarkOpacity() / 100;
+                    DataModel.setWatermarkOpacity(value)
+                    watermarkImage.opacity=DataModel.getWatermarkOpacity() / 100;
                 }
             }
 
@@ -85,16 +85,16 @@ P4U_Page {
             P4U_Slider {
                 id: sliderScale
                 Layout.fillWidth: true
-                value: AppLogic.getWatermarkSizePct();
+                value: DataModel.getWatermarkSizePct();
                 //maximumValue: Math.min(sourceImage.sourceSize.width * 100 / watermarkImage.sourceSize.width, sourceImage.sourceSize.height * 100 / watermarkImage.sourceSize.height)
                 fontPixelSize: okButton.fontPixelSize
 
                 onValueChanged: {
 //                    console.log(sourceImage.sourceSize.width * 100 / watermarkImage.sourceSize.width)
 //                    console.log(sourceImage.sourceSize.height * 100 / watermarkImage.sourceSize.height)
-                    AppLogic.setWatermarkSize(value, value)
+                    DataModel.setWatermarkSize(value, value)
                     if(sourceImage.paintedWidth != 0)
-                        watermarkImage.width=AppLogic.getWatermarkSize(sourceImage.paintedWidth);
+                        watermarkImage.width=DataModel.getWatermarkSize(sourceImage.paintedWidth);
                 }
             }
         }
@@ -109,7 +109,7 @@ P4U_Page {
                 var setX = Math.round(watermarkImage.x * 100 / (sourceImage.width - watermarkImage.width))
                 var setY = Math.round(watermarkImage.y * 100 / (sourceImage.height - watermarkImage.height))
                 //console.log("setX: ", setX, ", setY: ", setY)
-                AppLogic.setWatermarkPos(setX, setY)
+                DataModel.setWatermarkPos(setX, setY)
                 pageStack.pop()
             }
             anchors { horizontalCenter: parent.horizontalCenter }

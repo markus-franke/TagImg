@@ -78,7 +78,7 @@ P4U_Page {
             height: textScaleOfImage.height
             fontPixelSize: chooseWatermarkButton.fontPixelSize
 
-            onValueChanged: AppLogic.setImageScale(value)
+            onValueChanged: DataModel.setImageScale(value)
         }
     }
 
@@ -105,7 +105,7 @@ P4U_Page {
                 if(workloadList.text == "")
                     showMessage("Please choose any file or folder!")
                 else
-                    applyWatermark()
+                    AppLogic.applyWatermark()
             }
         }
 
@@ -135,7 +135,7 @@ P4U_Page {
 
         FileBrowser {
             bMultiSelect: false
-            onProcessWorklist: AppLogic.setWatermark(worklist)
+            onProcessWorklist: DataModel.setWatermark(worklist)
         }
     }
 
@@ -168,6 +168,4 @@ P4U_Page {
     function watermarkSizeChanged(scaleXPct, scaleYPct) {
 
     }
-
-    signal applyWatermark()
 }

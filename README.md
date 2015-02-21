@@ -1,6 +1,4 @@
 TagImg
 ======
 
-Apply watermarks to images
-
-This project uses ImageMagick.
+This cross-platform tool automatically resizes, rotates and applies watermarks to JPG images.

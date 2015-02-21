@@ -1,25 +1,30 @@
 #include <QtGui/QGuiApplication>
 #include <QQmlApplicationEngine>
 
-#include <applogic.h>
-
 #include <QThread>
-#include <QDebug>
 #include <QQmlContext>
 #include <QQuickWindow>
+
+#include "applogic.h"
+#include "datamodel.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
+    // get reference to datamodel
+    DataModel& dm = DataModel::instance();
+
+    // create application logic
     AppLogic appLogic;
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("AppLogic", &appLogic);
+    engine.rootContext()->setContextProperty("DataModel", &dm);
     engine.load(QUrl("qrc:///main.qml"));
 
     QQuickWindow* window = qobject_cast<QQuickWindow *>(engine.rootObjects().at(0));
-    window->setTitle("P4U Gui");
+    window->setTitle("TagImg");
     window->setIcon(QIcon("qrc:///icons/Watermark.png"));
     window->show();
 
@@ -28,30 +33,24 @@ int main(int argc, char *argv[])
     appLogic.moveToThread(&appLogicThread);
     appLogicThread.start();
 
-    // connect signals between GUI and application
-    // GUI -> App
-    QObject::connect(window, SIGNAL(applyWatermark()), &appLogic, SLOT(applyWatermark()));
-
-    // App -> GUI
+    // connect signals App -> GUI
     QObject::connect(&appLogic, SIGNAL(watermarkDone(int)), window, SIGNAL(watermarkDone(int)));
-    QObject::connect(&appLogic, SIGNAL(targetObjectChanged(QString)), window, SIGNAL(targetObjectChanged(QString)));
-    QObject::connect(&appLogic, SIGNAL(watermarkChanged(QString)), window, SIGNAL(watermarkChanged(QString)));
     QObject::connect(&appLogic, SIGNAL(setProgressValue(int)), window, SIGNAL(setProgressValue(int)));
-    QObject::connect(&appLogic, SIGNAL(imageScaleChanged(int)), window, SIGNAL(imageScaleChanged(int)));
-    QObject::connect(&appLogic, SIGNAL(dependencyError(QString)), window, SIGNAL(dependencyError(QString)));
-    QObject::connect(&appLogic, SIGNAL(watermarkSizeChanged(int,int)), window, SIGNAL(watermarkSizeChanged(int,int)));
 
-    // read default settings
-    appLogic.readDefaultSettings();
+    // connect signals DataModel -> GUI
+    QObject::connect(&dm, SIGNAL(targetObjectChanged(QString)), window, SIGNAL(targetObjectChanged(QString)));
+    QObject::connect(&dm, SIGNAL(watermarkChanged(QString)), window, SIGNAL(watermarkChanged(QString)));
+    QObject::connect(&dm, SIGNAL(imageScaleChanged(int)), window, SIGNAL(imageScaleChanged(int)));
+    QObject::connect(&dm, SIGNAL(watermarkSizeChanged(int,int)), window, SIGNAL(watermarkSizeChanged(int,int)));
 
-    // check dependencies
-    appLogic.checkDeps();
-
+    // some sample work items for testing
     //appLogic.setWorklist("file:///home/user/Desktop/qt-logo.jpg");
     //appLogic.setWorklist("file:///home/user/Desktop/pics");
 
+    // kick-off the app
     int ret = app.exec();
 
+    // wait for application logic thread to quit properly
     appLogicThread.exit();
     appLogicThread.wait();
 
