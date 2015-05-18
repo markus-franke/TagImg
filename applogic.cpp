@@ -121,6 +121,8 @@ void AppLogic::applyWatermark()
         QString outFileName = QFileInfo(currentFile).fileName();
         QString outFile = QString("%1/%2").arg(outFileDir).arg(outFileName);
 
+        qDebug() << "Current output file: " << outFile;
+
         // create output directory
         QDir::root().mkdir(outFileDir);
 
