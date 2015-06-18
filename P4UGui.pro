@@ -12,7 +12,6 @@ SOURCES += main.cpp \
     applogic.cpp \
     wmgeometry.cpp \
     qexifimageheader/qexifimageheader.cpp \
-    qtquick2applicationviewer/qtquick2applicationviewer.cpp \
     settings.cpp \
     datamodel.cpp
 
@@ -34,7 +33,6 @@ OTHER_FILES += \
 HEADERS += \
     applogic.h \
     wmgeometry.h \
-    qtquick2applicationviewer/qtquick2applicationviewer.h \
     qexifimageheader/qexifimageheader.h \
     settings.h \
     datamodel.h
