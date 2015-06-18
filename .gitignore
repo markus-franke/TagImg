@@ -4,3 +4,10 @@
 /P4UGui.desktop
 /P4UGui_harmattan.desktop
 /README.md~
+/cov-int/
+*.o
+moc_*
+/TagImg.tgz
+/qrc_resources.cpp
+/Makefile
+/P4UGui
