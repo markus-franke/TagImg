@@ -805,6 +805,7 @@ QExifImageHeader::QExifImageHeader()
     d->byteOrder = QSysInfo::ByteOrder;
     d->size = -1;
     exifHeaderId = 0xE1;
+    readOk = false;
 }
 /*!
     Constructs a new EXIF image data editor and reads the meta-data from a JPEG image with the given \a fileName.
@@ -906,7 +907,7 @@ bool QExifImageHeader::loadFromJpeg(QIODevice *device)
     Saves meta-data to a JPEG image with the given \a fileName.
     Returns true if the data was successfully written.
     */
-bool QExifImageHeader::saveToJpeg(const QString &fileName) const
+bool QExifImageHeader::saveToJpeg(const QString &fileName)
 {
     QFile file(fileName);
     if (file.open(QIODevice::ReadWrite))
@@ -919,7 +920,7 @@ bool QExifImageHeader::saveToJpeg(const QString &fileName) const
     The device must be non-sequential and already contain a valid JPEG image.
     Returns true if the data was successfully written.
     */
-bool QExifImageHeader::saveToJpeg(QIODevice *device) const
+bool QExifImageHeader::saveToJpeg(QIODevice *device)
 {
     if( device->isSequential() )
         return false;
@@ -1629,7 +1630,7 @@ template <typename T> void QExifImageHeader::writeExifValues(
     Writes an EXIF header to an I/O \a device.
     Returns the total number of bytes written.
     */
-qint64 QExifImageHeader::write(QIODevice *device) const
+qint64 QExifImageHeader::write(QIODevice *device)
 {
 #ifndef QT_NO_DEBUG
     qint64 startPos = device->pos();
@@ -1640,7 +1641,7 @@ qint64 QExifImageHeader::write(QIODevice *device) const
     QIODevice *exDevice = device;
     QByteArray exif = "";
     QBuffer buffer(&exif);
-    /*readOk = */buffer.open(QIODevice::ReadWrite);
+    readOk = buffer.open(QIODevice::ReadWrite);
     device = &buffer;
     QDataStream stream( &buffer );
 #else

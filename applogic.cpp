@@ -110,10 +110,10 @@ void AppLogic::applyWatermark()
         }
     }
 
+    bError = false; // so far we don't handle any errors
     QString currentFile;
-    for(int i = 0; i < fileList.length() && !bError; ++i)
+    for(int i = 0; i < fileList.length(); ++i)
     {
-        bError = true;
         currentFile = fileList.value(i);
         qDebug() << "Current file: " << currentFile;
 
@@ -176,13 +176,6 @@ void AppLogic::applyWatermark()
 
         // set progress value
         emit setProgressValue(qRound((i+1) * 100.0 / fileList.length()));
-
-        // reset error flag
-        bError = false;
-    }
-
-    if(bError) {
-        qDebug() << "There was an error. Current file =" << currentFile;
     }
 
     emit watermarkDone(bError);

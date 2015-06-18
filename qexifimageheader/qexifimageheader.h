@@ -260,10 +260,10 @@ public:
     bool loadFromData(QByteArray *exifData);
     bool loadFromJpeg(const QString &fileName);
     bool loadFromJpeg(QIODevice *device);
-    bool saveToJpeg(const QString &fileName) const;
-    bool saveToJpeg(QIODevice *device) const;
+    bool saveToJpeg(const QString &fileName);
+    bool saveToJpeg(QIODevice *device);
     bool read(QIODevice *device);
-    qint64 write(QIODevice *device) const;
+    qint64 write(QIODevice *device);
     qint64 size() const;
     QSysInfo::Endian byteOrder() const;
     void clear();
