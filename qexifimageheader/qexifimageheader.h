@@ -52,6 +52,7 @@
 #include <QSharedData>
 #include <QVariant>
 #include <QSysInfo>
+#include <QIODevice>
 typedef QPair< quint32, quint32 > QExifURational;
 typedef QPair< qint32, qint32 > QExifSRational;
 Q_DECLARE_METATYPE(QExifURational)
